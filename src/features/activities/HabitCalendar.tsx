@@ -174,11 +174,11 @@ export function HabitCalendar({
                     {/* Day number */}
                     <span
                       className={`text-sm mb-2 ${
-                        todayClass
-                          ? 'text-red-400 font-bold'
-                          : future
+                        future
                           ? 'text-gray-600'
-                          : 'text-gray-400'
+                          : todayClass
+                          ? 'text-blue-500 font-bold'
+                          : 'text-blue-500'
                       }`}
                     >
                       {day}
