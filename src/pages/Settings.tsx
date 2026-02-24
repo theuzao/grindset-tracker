@@ -995,7 +995,7 @@ function CanvasCourseSelectModal({
     });
   };
 
-  const toggleYear = (year: string, yearCourses: CanvasCourse[]) => {
+  const toggleYear = (_year: string, yearCourses: CanvasCourse[]) => {
     const allSelected = yearCourses.every(c => selected.has(c.id));
     setSelected(prev => {
       const next = new Set(prev);

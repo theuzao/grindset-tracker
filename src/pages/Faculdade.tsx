@@ -80,36 +80,6 @@ function googleCalendarUrl(exam: SubjectExam, subjectName?: string): string {
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${details}`;
 }
 
-function generateICS(exams: SubjectExam[], subjects: Subject[]): string {
-  const subjectMap = Object.fromEntries(subjects.map(s => [s.id, s]));
-  const lines: string[] = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Tracker//Faculdade//PT',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-  ];
-  for (const exam of exams) {
-    const subject = subjectMap[exam.subjectId];
-    const start = toICSDate(exam.scheduledDate);
-    const endDate = new Date(exam.scheduledDate + 'T00:00:00');
-    endDate.setDate(endDate.getDate() + 1);
-    const end = `${endDate.getFullYear()}${String(endDate.getMonth() + 1).padStart(2, '0')}${String(endDate.getDate()).padStart(2, '0')}`;
-    const summary = `${EXAM_TYPE_LABELS[exam.type]}: ${exam.title}${subject ? ` (${subject.name})` : ''}`;
-    const description = subject ? `Matéria: ${subject.name}\\nPeso: ${exam.weight}/${exam.maxGrade}` : '';
-    lines.push(
-      'BEGIN:VEVENT',
-      `UID:${exam.id}@tracker-faculdade`,
-      `DTSTART;VALUE=DATE:${start}`,
-      `DTEND;VALUE=DATE:${end}`,
-      `SUMMARY:${summary}`,
-      `DESCRIPTION:${description}`,
-      'END:VEVENT',
-    );
-  }
-  lines.push('END:VCALENDAR');
-  return lines.join('\r\n');
-}
 
 // ============================================
 // Main Page
@@ -138,8 +108,6 @@ export function Faculdade() {
   }, []);
 
   const activeSubjects = subjects?.filter(s => s.isActive) ?? [];
-  const currentSemester = activeSubjects[0]?.semester ?? '–';
-
   // Map subjectId → earliest future exam date string (for sorting)
   const subjectNextExamDate = useMemo(() => {
     const map: Record<string, string> = {};
@@ -160,20 +128,6 @@ export function Faculdade() {
     });
   }, [subjects, subjectNextExamDate]);
 
-  const handleExportCalendar = () => {
-    if (!allFutureExams || allFutureExams.length === 0) {
-      alert('Nenhuma tarefa futura para exportar.');
-      return;
-    }
-    const ics = generateICS(allFutureExams, subjects ?? []);
-    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'faculdade.ics';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const handleSync = async () => {
     if (!canvasConfig.enabled || !canvasConfig.token) {
