@@ -262,15 +262,8 @@ export const checkInRepository = {
     }
     await characterRepository.updateMultipleAttributes(negativeGains);
 
-    // Registrar evento de XP negativo
-    await db.xpEvents.add({
-      id: uuid(),
-      source: 'check-in',
-      sourceId: id,
-      amount: -checkIn.xpEarned,
-      description: `Check-in desfeito: ${checkIn.category}`,
-      timestamp: new Date().toISOString(),
-    });
+    // Remover o evento de check-in em vez de criar entrada negativa no histórico
+    await db.xpEvents.filter(e => e.sourceId === id && e.amount > 0).delete();
 
     // Remover check-in
     await db.checkIns.delete(id);

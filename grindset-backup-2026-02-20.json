@@ -1,0 +1,1923 @@
+{
+  "character": [
+    {
+      "id": "b792c782-a4f6-4215-ad4c-60fc9b6b3ab0",
+      "name": "thz",
+      "title": "Iniciante",
+      "level": 1,
+      "currentXP": 0,
+      "totalXP": 0,
+      "gold": 0,
+      "attributes": {
+        "focus": {
+          "type": "focus",
+          "name": "Foco",
+          "icon": "Target",
+          "color": "#6366F1",
+          "currentValue": 0.73,
+          "baseValue": 0
+        },
+        "discipline": {
+          "type": "discipline",
+          "name": "Disciplina",
+          "icon": "CalendarCheck",
+          "color": "#EF4444",
+          "currentValue": 3.1500000000000004,
+          "baseValue": 0
+        },
+        "energy": {
+          "type": "energy",
+          "name": "Energia",
+          "icon": "Zap",
+          "color": "#14B8A6",
+          "currentValue": 0.9,
+          "baseValue": 0
+        },
+        "knowledge": {
+          "type": "knowledge",
+          "name": "Conhecimento",
+          "icon": "BookOpen",
+          "color": "#F59E0B",
+          "currentValue": 0.35,
+          "baseValue": 0
+        },
+        "strength": {
+          "type": "strength",
+          "name": "Força",
+          "icon": "Dumbbell",
+          "color": "#EC4899",
+          "currentValue": 0.8,
+          "baseValue": 0
+        },
+        "wisdom": {
+          "type": "wisdom",
+          "name": "Sabedoria",
+          "icon": "Brain",
+          "color": "#8B5CF6",
+          "currentValue": 4.579999999999999,
+          "baseValue": 0
+        },
+        "resilience": {
+          "type": "resilience",
+          "name": "Resiliência",
+          "icon": "Shield",
+          "color": "#06B6D4",
+          "currentValue": 0.5,
+          "baseValue": 0
+        }
+      },
+      "streak": {
+        "current": 0,
+        "longest": 0,
+        "lastActiveDate": "2026-02-07T13:14:12.846Z"
+      },
+      "createdAt": "2026-02-07T13:14:12.846Z",
+      "updatedAt": "2026-02-20T07:56:32.894Z",
+      "avatar": "data:image/jpeg;base64,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",
+      "banner": "#0a0a0a"
+    }
+  ],
+  "activities": [],
+  "quests": [
+    {
+      "id": "020211ef-e983-45e7-87b6-190260753ee8",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "pending",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-20",
+      "estimatedDuration": 5,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-19T22:39:15.026Z",
+      "updatedAt": "2026-02-19T22:39:15.026Z"
+    },
+    {
+      "id": "158a4547-b41e-4181-a52b-23b9cbf344b8",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-14",
+      "estimatedDuration": 5,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-14T18:19:24.827Z",
+      "updatedAt": "2026-02-18T22:52:14.554Z"
+    },
+    {
+      "id": "1ab57bf5-8786-4505-be04-ff2b2eabafd3",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-13",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-13T20:46:21.216Z",
+      "updatedAt": "2026-02-14T18:19:24.745Z"
+    },
+    {
+      "id": "2084ed24-8915-45bc-b8d9-9b0efa2b8409",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-11",
+      "estimatedDuration": 5,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-10T20:12:06.135Z",
+      "updatedAt": "2026-02-13T20:46:21.156Z"
+    },
+    {
+      "id": "242a5a53-0115-4b97-81d2-73a9c47f94f5",
+      "title": "chilling meditation",
+      "category": "side",
+      "difficulty": "medium",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-09",
+      "estimatedDuration": null,
+      "xpReward": 18,
+      "goldReward": 9,
+      "relatedActivity": "meditation",
+      "createdAt": "2026-02-09T22:58:17.815Z",
+      "updatedAt": "2026-02-10T03:39:38.666Z",
+      "completedAt": "2026-02-10T03:39:38.666Z",
+      "attributeGains": {
+        "focus": 0.35,
+        "wisdom": 0.25,
+        "energy": 0.2,
+        "resilience": 0.2
+      }
+    },
+    {
+      "id": "2616e34c-82a7-4401-8f12-6b59b22bc21c",
+      "title": "Lavar louça",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-10",
+      "estimatedDuration": 10,
+      "xpReward": 22,
+      "goldReward": 11,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-10T16:23:01.987Z",
+      "updatedAt": "2026-02-11T20:17:42.018Z"
+    },
+    {
+      "id": "27db7868-52fa-4117-830e-e34e582afe85",
+      "title": "chilling meditation",
+      "category": "main",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-06",
+      "estimatedDuration": 15,
+      "xpReward": 10,
+      "goldReward": 5,
+      "relatedActivity": "meditation",
+      "createdAt": "2026-02-06T22:51:27.825Z",
+      "updatedAt": "2026-02-06T23:18:31.705Z",
+      "completedAt": "2026-02-06T23:09:45.738Z",
+      "attributeGains": {
+        "focus": 0.18,
+        "wisdom": 0.13,
+        "energy": 0.1,
+        "resilience": 0.1
+      }
+    },
+    {
+      "id": "2977cf8e-0138-4bd5-bd40-0b58de1bef00",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-06",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-06T17:26:42.686Z",
+      "updatedAt": "2026-02-07T13:22:21.414Z"
+    },
+    {
+      "id": "2b814589-470a-4c91-962f-8161d5ccf4b1",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-13",
+      "estimatedDuration": 5,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-13T20:46:21.192Z",
+      "updatedAt": "2026-02-14T18:19:24.807Z"
+    },
+    {
+      "id": "3c59fe55-5bdb-442b-bcb3-cfcaf4b2e064",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-11",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-11T20:17:42.077Z",
+      "updatedAt": "2026-02-13T20:46:21.201Z"
+    },
+    {
+      "id": "3e1e312c-f271-4d39-b17c-b408404f2315",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-08",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-08T02:18:56.542Z",
+      "updatedAt": "2026-02-09T18:42:33.186Z"
+    },
+    {
+      "id": "3ed4e99a-611d-4401-9503-6940693bad9e",
+      "title": "Lavar louça",
+      "category": "side",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-06",
+      "estimatedDuration": 10,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-06T20:20:24.804Z",
+      "updatedAt": "2026-02-07T00:06:39.649Z",
+      "completedAt": "2026-02-07T00:06:39.649Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    },
+    {
+      "id": "4490c3f9-d2aa-425d-a24b-2dd75a13a298",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-18",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-18T22:52:14.626Z",
+      "updatedAt": "2026-02-19T17:16:06.330Z"
+    },
+    {
+      "id": "4658aaef-df7b-431d-b665-40840d787753",
+      "title": "Revisar Anki",
+      "description": "[anki-auto] Revisar pelo menos 20 cards no Anki",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-13",
+      "xpReward": 26,
+      "goldReward": 13,
+      "relatedActivity": "study",
+      "createdAt": "2026-02-13T23:17:26.334Z",
+      "updatedAt": "2026-02-14T18:19:24.839Z"
+    },
+    {
+      "id": "4bd035ea-3551-4aef-a63c-7b37d84d3a5e",
+      "title": "Calistenia",
+      "description": "Abs 3x20\nNeck 3x20\nPushups 3x20\nQuats 3x20",
+      "category": "side",
+      "difficulty": "hard",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-06",
+      "estimatedDuration": 30,
+      "xpReward": 45,
+      "goldReward": 26,
+      "relatedActivity": "workout",
+      "createdAt": "2026-02-06T21:44:05.640Z",
+      "updatedAt": "2026-02-06T22:50:32.184Z",
+      "completedAt": "2026-02-06T22:50:32.184Z",
+      "attributeGains": {
+        "strength": 0.8,
+        "energy": 0.6,
+        "discipline": 0.4,
+        "resilience": 0.2
+      }
+    },
+    {
+      "id": "4e3dbc11-cf19-4dd9-bda7-60d6fe47f0e0",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "pending",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-20",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-20T07:36:46.750Z",
+      "updatedAt": "2026-02-20T07:36:46.750Z"
+    },
+    {
+      "id": "54a50020-b116-4e26-aa02-2cc8b8deee01",
+      "title": "Revisar Anki",
+      "description": "[anki-auto] Revisar pelo menos 20 cards no Anki",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-14",
+      "xpReward": 26,
+      "goldReward": 13,
+      "relatedActivity": "study",
+      "createdAt": "2026-02-14T03:00:54.723Z",
+      "updatedAt": "2026-02-18T22:52:14.587Z"
+    },
+    {
+      "id": "59317628-3319-4b4a-8820-544ce007c6fe",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "completed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-09",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-09T18:42:33.213Z",
+      "updatedAt": "2026-02-10T03:39:36.349Z",
+      "completedAt": "2026-02-10T03:39:36.349Z"
+    },
+    {
+      "id": "69af3ffe-65ab-44b1-b98c-eda6a6145720",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-07",
+      "estimatedDuration": 5,
+      "xpReward": 10,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-07T15:49:39.076Z",
+      "updatedAt": "2026-02-08T02:19:19.587Z",
+      "completedAt": "2026-02-08T02:19:19.587Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    },
+    {
+      "id": "803d338e-7995-4a3b-82b1-fba4e3bdf307",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-14",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-14T18:19:24.795Z",
+      "updatedAt": "2026-02-18T22:52:14.609Z"
+    },
+    {
+      "id": "8136467f-81d4-4424-b863-0cbe944e8197",
+      "title": "Lavar pratos",
+      "category": "side",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-19",
+      "estimatedDuration": null,
+      "xpReward": 7,
+      "goldReward": 3,
+      "createdAt": "2026-02-19T17:24:26.626Z",
+      "updatedAt": "2026-02-19T22:39:14.041Z",
+      "completedAt": "2026-02-19T22:39:14.041Z"
+    },
+    {
+      "id": "83f3ac7c-50d1-4b4f-b9b2-1686ccca0216",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-10",
+      "estimatedDuration": 5,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-09T22:39:20.134Z",
+      "updatedAt": "2026-02-10T20:12:06.063Z",
+      "completedAt": "2026-02-10T20:12:06.063Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    },
+    {
+      "id": "8a831251-542c-4c4e-a119-d0f29c425df2",
+      "title": "Limpar e organizar gavetas",
+      "category": "side",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-19",
+      "estimatedDuration": 15,
+      "xpReward": 10,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-19T17:24:11.419Z",
+      "updatedAt": "2026-02-19T22:39:13.726Z",
+      "completedAt": "2026-02-19T22:39:13.726Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    },
+    {
+      "id": "8bfae566-88d5-4a60-b12f-5c0c1a6b57e5",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-10",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-10T03:39:36.382Z",
+      "updatedAt": "2026-02-11T20:17:42.055Z"
+    },
+    {
+      "id": "98c8538d-d67a-422b-98f3-f0d50423d8eb",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-09",
+      "estimatedDuration": 5,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-09T22:39:17.261Z",
+      "updatedAt": "2026-02-09T22:39:20.105Z",
+      "completedAt": "2026-02-09T22:39:20.105Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    },
+    {
+      "id": "a08491bd-f72c-4ebb-bf4a-b26495087de3",
+      "title": "Matrícula PUC",
+      "category": "side",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-09",
+      "estimatedDuration": null,
+      "xpReward": 7,
+      "goldReward": 3,
+      "createdAt": "2026-02-09T19:04:05.921Z",
+      "updatedAt": "2026-02-09T19:04:08.579Z",
+      "completedAt": "2026-02-09T19:04:08.579Z"
+    },
+    {
+      "id": "a6c88f1d-528c-4ca0-9b4b-bc239e670fbd",
+      "title": "Tomar sol",
+      "category": "side",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-19",
+      "estimatedDuration": 15,
+      "xpReward": 7,
+      "goldReward": 3,
+      "createdAt": "2026-02-19T18:23:00.557Z",
+      "updatedAt": "2026-02-19T18:23:03.085Z",
+      "completedAt": "2026-02-19T18:23:03.085Z"
+    },
+    {
+      "id": "b50b4858-f6e1-4612-a1d6-e953103715f5",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-19",
+      "estimatedDuration": 5,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-19T17:16:06.382Z",
+      "updatedAt": "2026-02-19T22:39:14.936Z",
+      "completedAt": "2026-02-19T22:39:14.936Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    },
+    {
+      "id": "bc622525-e381-4f4f-9809-41c68a17d858",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-19",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-19T17:16:06.357Z",
+      "updatedAt": "2026-02-20T07:36:46.730Z"
+    },
+    {
+      "id": "cef3cf8f-f0b5-43b8-b110-84163152d580",
+      "title": "Varrer chão",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-06",
+      "estimatedDuration": 10,
+      "xpReward": 20,
+      "goldReward": 10,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-06T20:02:35.002Z",
+      "updatedAt": "2026-02-06T20:42:53.588Z",
+      "completedAt": "2026-02-06T20:42:53.588Z",
+      "attributeGains": {
+        "discipline": 0.4,
+        "wisdom": 0.6
+      }
+    },
+    {
+      "id": "d9aced9a-f3df-4d99-b58f-e05e5085a0cb",
+      "title": "Organizar quarto",
+      "category": "side",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-09",
+      "estimatedDuration": 15,
+      "xpReward": 7,
+      "goldReward": 3,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-09T22:00:49.496Z",
+      "updatedAt": "2026-02-09T22:38:41.854Z",
+      "completedAt": "2026-02-09T22:38:41.854Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    },
+    {
+      "id": "dd19148d-d39d-4e43-9573-05a13b4d9015",
+      "title": "Afirmações",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-07",
+      "estimatedDuration": 5,
+      "xpReward": 20,
+      "goldReward": 10,
+      "createdAt": "2026-02-07T13:22:21.433Z",
+      "updatedAt": "2026-02-08T02:19:22.476Z"
+    },
+    {
+      "id": "e20cda91-bd6f-4575-9a32-e831fc33cf52",
+      "title": "Leitura - Corpus Hermeticum",
+      "category": "main",
+      "difficulty": "medium",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-09",
+      "estimatedDuration": 15,
+      "xpReward": 39,
+      "goldReward": 19,
+      "relatedActivity": "reading",
+      "createdAt": "2026-02-09T22:42:55.684Z",
+      "updatedAt": "2026-02-09T22:57:51.704Z",
+      "completedAt": "2026-02-09T22:57:51.704Z",
+      "attributeGains": {
+        "knowledge": 0.35,
+        "wisdom": 0.3,
+        "focus": 0.2,
+        "discipline": 0.15
+      }
+    },
+    {
+      "id": "e639c8f7-0d9e-4983-9d05-1d6bc9e687cf",
+      "title": "Organizar quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-10",
+      "estimatedDuration": 5,
+      "xpReward": 10,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-10T16:22:47.615Z",
+      "updatedAt": "2026-02-11T20:17:57.030Z",
+      "completedAt": "2026-02-11T20:17:57.030Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    },
+    {
+      "id": "ee4c741b-34dd-4f7f-ac9d-d049b9b06072",
+      "title": "Organizar Quarto",
+      "category": "daily",
+      "difficulty": "medium",
+      "status": "completed",
+      "recurrence": "once",
+      "scheduledDate": "2026-02-06",
+      "estimatedDuration": 10,
+      "xpReward": 20,
+      "goldReward": 10,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-06T20:01:27.084Z",
+      "updatedAt": "2026-02-06T20:42:54.177Z",
+      "completedAt": "2026-02-06T20:42:54.177Z",
+      "attributeGains": {
+        "discipline": 0.4,
+        "wisdom": 0.6
+      }
+    },
+    {
+      "id": "f7bd812d-06ca-4301-bec3-66e65de20290",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "failed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-18",
+      "estimatedDuration": 5,
+      "xpReward": 11,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-18T22:52:14.580Z",
+      "updatedAt": "2026-02-19T17:16:06.362Z"
+    },
+    {
+      "id": "f8aca181-d687-44db-a0d7-68b8129f1b10",
+      "title": "Varrer quarto",
+      "category": "daily",
+      "difficulty": "easy",
+      "status": "completed",
+      "recurrence": "daily",
+      "scheduledDate": "2026-02-08",
+      "estimatedDuration": 5,
+      "xpReward": 10,
+      "goldReward": 5,
+      "relatedActivity": "organizacao",
+      "createdAt": "2026-02-07T21:48:39.515Z",
+      "updatedAt": "2026-02-09T22:39:17.232Z",
+      "completedAt": "2026-02-09T22:39:17.232Z",
+      "attributeGains": {
+        "discipline": 0.2,
+        "wisdom": 0.3
+      }
+    }
+  ],
+  "objectives": [
+    {
+      "id": "43f3176d-aa5f-4ae1-9c9b-a1c521e562a0",
+      "title": "Curso SpringBoot",
+      "timeframe": "short",
+      "status": "active",
+      "progress": 0,
+      "milestones": [
+        {
+          "id": "0992fe08-b483-4ad1-91f0-5332ce868ed7",
+          "title": "Aula 5",
+          "isCompleted": false,
+          "order": 0
+        },
+        {
+          "id": "1c573dd0-154a-483f-bee3-ffd4c66bb7e4",
+          "title": "Aula 10",
+          "isCompleted": false,
+          "order": 1
+        },
+        {
+          "id": "a4bf3c6b-ccac-4abf-9321-aa80410c11fe",
+          "title": "Aula 13",
+          "isCompleted": false,
+          "order": 2
+        },
+        {
+          "id": "31a99a96-8355-4e4b-adf5-42460d0a17d1",
+          "title": "Aula 17",
+          "isCompleted": false,
+          "order": 3
+        }
+      ],
+      "startDate": "2026-02-06T17:29:54.534Z",
+      "targetDate": "2026-03-08T00:00:00.000Z",
+      "xpReward": 100,
+      "relatedActivities": [
+        "study"
+      ],
+      "createdAt": "2026-02-06T17:29:54.534Z",
+      "updatedAt": "2026-02-06T23:17:07.673Z"
+    }
+  ],
+  "reflections": [],
+  "weeklyReports": [],
+  "achievements": [],
+  "xpEvents": [
+    {
+      "id": "02044ba7-8f40-43c4-8c72-f9cfc8f91c19",
+      "source": "check-in",
+      "sourceId": "8f843100-1f14-4fbe-a4f8-135aa1be4e59",
+      "amount": 10,
+      "description": "Check-in: Organização",
+      "timestamp": "2026-02-07T15:49:13.388Z"
+    },
+    {
+      "id": "056d9b5a-2149-4963-b851-d043fe7ccd51",
+      "source": "quest",
+      "sourceId": "f8aca181-d687-44db-a0d7-68b8129f1b10",
+      "amount": 10,
+      "description": "Quest completada: Varrer quarto",
+      "timestamp": "2026-02-09T22:39:17.232Z"
+    },
+    {
+      "id": "0dd39883-1b98-4aba-aded-177286d2a774",
+      "source": "quest",
+      "sourceId": "1ab57bf5-8786-4505-be04-ff2b2eabafd3",
+      "amount": -45,
+      "description": "Quest não realizada (4.5x): Afirmações",
+      "timestamp": "2026-02-14T18:19:24.745Z"
+    },
+    {
+      "id": "194944cc-dade-4d0c-b1be-1968ba94ca26",
+      "source": "quest",
+      "sourceId": "a6c88f1d-528c-4ca0-9b4b-bc239e670fbd",
+      "amount": 7,
+      "description": "Quest completada: Tomar sol",
+      "timestamp": "2026-02-19T18:23:03.085Z"
+    },
+    {
+      "id": "194d75a7-f43c-411c-a1b1-66c3bba81a60",
+      "source": "check-in",
+      "sourceId": "33d8fca0-bb0f-42a2-bea1-aeb4834f13d8",
+      "amount": 10,
+      "description": "Check-in: Organização",
+      "timestamp": "2026-02-09T22:39:33.226Z"
+    },
+    {
+      "id": "198a1ab6-cffb-4f6b-b1c2-05be57f4296e",
+      "source": "quest",
+      "sourceId": "2616e34c-82a7-4401-8f12-6b59b22bc21c",
+      "amount": -25,
+      "description": "Quest não realizada (2.5x): Lavar louça",
+      "timestamp": "2026-02-11T20:17:42.018Z"
+    },
+    {
+      "id": "1bdf24b6-9c2e-4d71-9284-5f4e5773e539",
+      "source": "quest",
+      "sourceId": "69af3ffe-65ab-44b1-b98c-eda6a6145720",
+      "amount": -10,
+      "description": "Quest desmarcada: Varrer quarto",
+      "timestamp": "2026-02-08T02:19:18.920Z"
+    },
+    {
+      "id": "1eb7d9f8-a7b1-4484-822c-e044ef892de4",
+      "source": "check-in",
+      "sourceId": "57d63e39-29f3-4988-90b3-9a19a2b5922b",
+      "amount": 20,
+      "description": "Check-in: Meditação",
+      "timestamp": "2026-02-10T03:39:51.226Z"
+    },
+    {
+      "id": "2025b96a-d74d-4a7f-acab-652eebcca592",
+      "source": "check-in",
+      "sourceId": "9fd4ed8a-8e29-4d4e-8b2a-4af92b1379eb",
+      "amount": -20,
+      "description": "Check-in desfeito: aura",
+      "timestamp": "2026-02-14T02:15:03.180Z"
+    },
+    {
+      "id": "23967050-d7a0-42bc-ad9f-138e5ebef120",
+      "source": "quest",
+      "sourceId": "8136467f-81d4-4424-b863-0cbe944e8197",
+      "amount": 7,
+      "description": "Quest completada: Lavar pratos",
+      "timestamp": "2026-02-19T22:39:14.041Z"
+    },
+    {
+      "id": "243253a2-90b3-49d8-9282-5c75f6535124",
+      "source": "check-in",
+      "sourceId": "4d43efca-0622-4f2f-a164-8cdf72a01159",
+      "amount": 10,
+      "description": "Check-in: Organização",
+      "timestamp": "2026-02-19T22:52:20.117Z"
+    },
+    {
+      "id": "2880590f-19de-4988-b1ab-385c7fde1940",
+      "source": "quest",
+      "sourceId": "bc622525-e381-4f4f-9809-41c68a17d858",
+      "amount": -50,
+      "description": "Quest não realizada (5.0x): Afirmações",
+      "timestamp": "2026-02-20T03:40:41.949Z"
+    },
+    {
+      "id": "2b8e96e6-0468-4bd7-8afd-9bdcc28cfddb",
+      "source": "quest",
+      "sourceId": "f8aca181-d687-44db-a0d7-68b8129f1b10",
+      "amount": -10,
+      "description": "Quest desmarcada: Varrer quarto",
+      "timestamp": "2026-02-09T22:39:13.207Z"
+    },
+    {
+      "id": "2c183d21-3f37-4afe-9422-8fafa503b0da",
+      "source": "quest",
+      "sourceId": "e639c8f7-0d9e-4983-9d05-1d6bc9e687cf",
+      "amount": 10,
+      "description": "Quest completada: Organizar quarto",
+      "timestamp": "2026-02-11T20:17:57.030Z"
+    },
+    {
+      "id": "2da36e0b-8e6d-46aa-8287-fa48a111b5f8",
+      "source": "quest",
+      "sourceId": "3e1e312c-f271-4d39-b17c-b408404f2315",
+      "amount": -20,
+      "description": "Quest não realizada (2.0x): Afirmações",
+      "timestamp": "2026-02-09T18:42:33.186Z"
+    },
+    {
+      "id": "2f4579a8-d1b9-43af-b3d5-7a481f9a3d99",
+      "source": "check-in",
+      "sourceId": "7c892174-feb3-4aa5-b134-23fcb6f2e209",
+      "amount": -10,
+      "description": "Check-in desfeito: organizacao",
+      "timestamp": "2026-02-09T22:39:32.746Z"
+    },
+    {
+      "id": "30e94797-3d33-44d1-967f-21028f91a35c",
+      "source": "check-in",
+      "sourceId": "9520739e-c5ab-4501-9c45-419cd3227dd3",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-07T20:13:57.658Z"
+    },
+    {
+      "id": "33fd1db2-0125-4b63-9636-cb933be5820b",
+      "source": "quest",
+      "sourceId": "0c81241c-4022-4485-a22d-daa851028fd8",
+      "amount": -25,
+      "description": "Quest não realizada (5.0x): Estudar: Laboratório de Desenvolvimento de Software - Engenharia de Software - Campus Coração Eucarístico - PMG - Manhã - 2026/1",
+      "timestamp": "2026-02-19T20:22:49.358Z"
+    },
+    {
+      "id": "3557a4c2-3f10-4cef-982b-37b6cd85a84a",
+      "source": "quest",
+      "sourceId": "886fb699-26dd-45f3-9f3e-553699934fb5",
+      "amount": -12,
+      "description": "Quest não realizada (2.5x): Varrer quarto",
+      "timestamp": "2026-02-09T22:38:42.333Z"
+    },
+    {
+      "id": "372913b1-2bce-4f1c-8a73-f8716afcfbd4",
+      "source": "quest",
+      "sourceId": "dd19148d-d39d-4e43-9573-05a13b4d9015",
+      "amount": -15,
+      "description": "Quest não realizada (1.5x): Afirmações",
+      "timestamp": "2026-02-08T02:19:22.476Z"
+    },
+    {
+      "id": "3858364f-76c0-46bb-a8a8-983d1a5a8576",
+      "source": "quest",
+      "sourceId": "dd19148d-d39d-4e43-9573-05a13b4d9015",
+      "amount": -15,
+      "description": "Quest não realizada (1.5x): Afirmações",
+      "timestamp": "2026-02-08T02:18:56.473Z"
+    },
+    {
+      "id": "38a34acb-750b-4286-818f-a6e95f354bc3",
+      "source": "quest",
+      "sourceId": "2b814589-470a-4c91-962f-8161d5ccf4b1",
+      "amount": -25,
+      "description": "Quest não realizada (5.0x): Varrer quarto",
+      "timestamp": "2026-02-14T18:19:24.807Z"
+    },
+    {
+      "id": "38d479dc-bddc-4a20-9611-a212ce539abf",
+      "source": "check-in",
+      "sourceId": "2f8b2c95-120a-4b5d-bfbb-5ef59752d8d8",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-07T20:13:59.283Z"
+    },
+    {
+      "id": "3d50a92d-9bb0-45a1-ac82-62d55de2ba0e",
+      "source": "quest",
+      "sourceId": "3e1e312c-f271-4d39-b17c-b408404f2315",
+      "amount": -20,
+      "description": "Quest desmarcada: Afirmações",
+      "timestamp": "2026-02-08T06:05:30.029Z"
+    },
+    {
+      "id": "449f73c4-a288-49d9-80ce-2f4fca1d869e",
+      "source": "check-in",
+      "sourceId": "7c7b341a-ed0f-4a7f-8dc6-28930dab4b2f",
+      "amount": -25,
+      "description": "Check-in desfeito: reading",
+      "timestamp": "2026-02-09T22:39:36.950Z"
+    },
+    {
+      "id": "456c9c3c-cc4f-49c4-8cfa-c864f27a3abe",
+      "source": "check-in",
+      "sourceId": "063e45af-126e-4765-ac0e-e2130ff3e853",
+      "amount": -25,
+      "description": "Check-in desfeito: reading",
+      "timestamp": "2026-02-09T22:39:38.238Z"
+    },
+    {
+      "id": "467738e2-9a06-4082-a44b-ddc87d286c80",
+      "source": "check-in",
+      "sourceId": "27a3dba5-3344-4f1a-ab4f-b3f7ac2f63eb",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-09T17:43:31.036Z"
+    },
+    {
+      "id": "4b27652a-1011-4714-af5f-4d5f4615251a",
+      "source": "check-in",
+      "sourceId": "33d8fca0-bb0f-42a2-bea1-aeb4834f13d8",
+      "amount": -10,
+      "description": "Check-in desfeito: organizacao",
+      "timestamp": "2026-02-09T22:39:34.533Z"
+    },
+    {
+      "id": "50554122-9992-4efb-b4f3-7803cd2595f8",
+      "source": "check-in",
+      "sourceId": "08215221-e0d7-4b61-afbc-f8829d490567",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-08T03:59:16.175Z"
+    },
+    {
+      "id": "5406e868-4c32-4194-8f3a-9383d7737b1f",
+      "source": "check-in",
+      "sourceId": "4b8b2c39-aabb-40a1-a25c-08677f90dfd7",
+      "amount": 30,
+      "description": "Check-in: Estudo",
+      "timestamp": "2026-02-13T22:30:52.989Z"
+    },
+    {
+      "id": "58da7d52-c16d-4df4-8b5b-d9f555cadcae",
+      "source": "check-in",
+      "sourceId": "ae9a0ef9-c4f3-4e38-9c89-f4617a5f30e5",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-18T23:37:30.906Z"
+    },
+    {
+      "id": "5ed16c77-27b0-41f5-9844-e6c7010796aa",
+      "source": "quest",
+      "sourceId": "e639c8f7-0d9e-4983-9d05-1d6bc9e687cf",
+      "amount": -17,
+      "description": "Quest não realizada (3.5x): Organizar quarto",
+      "timestamp": "2026-02-11T20:17:42.083Z"
+    },
+    {
+      "id": "6cd6ab39-6214-4949-839f-24fbf940af27",
+      "source": "quest",
+      "sourceId": "bc622525-e381-4f4f-9809-41c68a17d858",
+      "amount": -50,
+      "description": "Quest não realizada (5.0x): Afirmações",
+      "timestamp": "2026-02-20T07:36:46.730Z"
+    },
+    {
+      "id": "70784201-9b61-4591-9e21-581bc0f738af",
+      "source": "quest",
+      "sourceId": "242a5a53-0115-4b97-81d2-73a9c47f94f5",
+      "amount": -17,
+      "description": "Quest não realizada (2.5x): chilling meditation",
+      "timestamp": "2026-02-10T03:38:19.231Z"
+    },
+    {
+      "id": "70a5c9ba-99ba-416f-8896-4d0e54df0248",
+      "source": "quest",
+      "sourceId": "a08491bd-f72c-4ebb-bf4a-b26495087de3",
+      "amount": 7,
+      "description": "Quest completada: Matrícula PUC",
+      "timestamp": "2026-02-09T19:04:08.579Z"
+    },
+    {
+      "id": "73711420-6279-48d5-99fc-755209eea1cc",
+      "source": "quest",
+      "sourceId": "3c59fe55-5bdb-442b-bcb3-cfcaf4b2e064",
+      "amount": -40,
+      "description": "Quest não realizada (4.0x): Afirmações",
+      "timestamp": "2026-02-13T20:46:21.201Z"
+    },
+    {
+      "id": "750e6c1a-f3a3-4ec3-8a89-2e78280878d8",
+      "source": "quest",
+      "sourceId": "242a5a53-0115-4b97-81d2-73a9c47f94f5",
+      "amount": 18,
+      "description": "Quest completada: chilling meditation",
+      "timestamp": "2026-02-10T03:39:38.666Z"
+    },
+    {
+      "id": "76a11eed-8997-46a2-a140-01cee0dd5968",
+      "source": "quest",
+      "sourceId": "27db7868-52fa-4117-830e-e34e582afe85",
+      "amount": 13,
+      "description": "Quest completada: chilling meditation",
+      "timestamp": "2026-02-06T23:09:45.738Z"
+    },
+    {
+      "id": "7bac1a4f-4384-4064-8b13-d4d129ecb61d",
+      "source": "check-in",
+      "sourceId": "7aa8966d-a9db-482e-bca7-3cf641f28def",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-09T17:41:11.338Z"
+    },
+    {
+      "id": "823260ea-7547-4768-b8a9-1158fab1ea2a",
+      "source": "check-in",
+      "sourceId": "c8ca7257-3f7c-4f7b-80e2-7bdb813c1d0c",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-09T17:43:30.139Z"
+    },
+    {
+      "id": "83ac2c36-ff78-467d-8376-e3710340615b",
+      "source": "quest",
+      "sourceId": "83f3ac7c-50d1-4b4f-b9b2-1686ccca0216",
+      "amount": 11,
+      "description": "Quest completada: Varrer quarto",
+      "timestamp": "2026-02-10T20:12:06.063Z"
+    },
+    {
+      "id": "84cd238f-faee-424d-8727-26d04f2f9721",
+      "source": "check-in",
+      "sourceId": "8bea2ce8-8522-4554-b1c6-1a242bba8863",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-19T17:49:35.103Z"
+    },
+    {
+      "id": "8835f643-ad34-41b4-ac13-5c6f0e930167",
+      "source": "check-in",
+      "sourceId": "900d8ea7-237d-478b-90f7-0e39d5702959",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-13T22:31:09.023Z"
+    },
+    {
+      "id": "896ae305-0c9d-495f-b293-db6d74080a27",
+      "source": "quest",
+      "sourceId": "2084ed24-8915-45bc-b8d9-9b0efa2b8409",
+      "amount": -17,
+      "description": "Quest não realizada (3.5x): Varrer quarto",
+      "timestamp": "2026-02-13T20:46:21.156Z"
+    },
+    {
+      "id": "8a4f3c7d-bda0-4589-966c-86b60d7043f9",
+      "source": "check-in",
+      "sourceId": "ff08d413-1b61-4843-b404-46297c86e7cf",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-09T17:43:32.257Z"
+    },
+    {
+      "id": "8cb52d73-f857-4871-a38d-c1d59a9d0660",
+      "source": "quest",
+      "sourceId": "59317628-3319-4b4a-8820-544ce007c6fe",
+      "amount": 20,
+      "description": "Quest completada: Afirmações",
+      "timestamp": "2026-02-10T03:39:36.349Z"
+    },
+    {
+      "id": "90370cd7-d30c-4c4a-a6a8-ce58c5e2d87d",
+      "source": "check-in",
+      "sourceId": "7c892174-feb3-4aa5-b134-23fcb6f2e209",
+      "amount": 10,
+      "description": "Check-in: Organização",
+      "timestamp": "2026-02-09T22:39:30.689Z"
+    },
+    {
+      "id": "9105ad1b-f979-4999-8cff-7630c1f57294",
+      "source": "quest",
+      "sourceId": "4658aaef-df7b-431d-b665-40840d787753",
+      "amount": -50,
+      "description": "Quest não realizada (5.0x): Revisar Anki",
+      "timestamp": "2026-02-14T18:19:24.839Z"
+    },
+    {
+      "id": "92b4907b-d67f-4e89-9540-409a77530fea",
+      "source": "quest",
+      "sourceId": "f8aca181-d687-44db-a0d7-68b8129f1b10",
+      "amount": 10,
+      "description": "Quest completada: Varrer quarto",
+      "timestamp": "2026-02-09T18:43:03.493Z"
+    },
+    {
+      "id": "9533fe7e-b0f7-4789-834e-2564d06d00d9",
+      "source": "quest",
+      "sourceId": "f7bd812d-06ca-4301-bec3-66e65de20290",
+      "amount": -25,
+      "description": "Quest não realizada (5.0x): Varrer quarto",
+      "timestamp": "2026-02-19T17:16:06.362Z"
+    },
+    {
+      "id": "a8ec0879-700a-4a31-a716-e236e1c2b6ad",
+      "source": "quest",
+      "sourceId": "e20cda91-bd6f-4575-9a32-e831fc33cf52",
+      "amount": 39,
+      "description": "Quest completada: Leitura - Corpus Hermeticum",
+      "timestamp": "2026-02-09T22:57:51.704Z"
+    },
+    {
+      "id": "aaabc8b5-867a-487b-a707-db05fe55e5f8",
+      "source": "quest",
+      "sourceId": "d9aced9a-f3df-4d99-b58f-e05e5085a0cb",
+      "amount": 7,
+      "description": "Quest completada: Organizar quarto",
+      "timestamp": "2026-02-09T22:38:41.854Z"
+    },
+    {
+      "id": "b26a67b2-4013-4ba6-bca5-51dac883bd7f",
+      "source": "check-in",
+      "sourceId": "063e45af-126e-4765-ac0e-e2130ff3e853",
+      "amount": 25,
+      "description": "Check-in: Leitura",
+      "timestamp": "2026-02-09T22:39:37.253Z"
+    },
+    {
+      "id": "b583c0ec-25a8-46f0-8b6f-a5ea9f27b7bf",
+      "source": "check-in",
+      "sourceId": "7aa8966d-a9db-482e-bca7-3cf641f28def",
+      "amount": -20,
+      "description": "Check-in desfeito: aura",
+      "timestamp": "2026-02-10T03:39:46.186Z"
+    },
+    {
+      "id": "b8f971e4-5a09-42aa-afb3-2922087ede67",
+      "source": "quest",
+      "sourceId": "ee4c741b-34dd-4f7f-ac9d-d049b9b06072",
+      "amount": 20,
+      "description": "Quest completada: Organizar Quarto",
+      "timestamp": "2026-02-06T20:42:54.177Z"
+    },
+    {
+      "id": "b92d81af-ebc9-40d7-9af4-0ef4dbc9e67b",
+      "source": "check-in",
+      "sourceId": "c2d26aa3-b03c-4bb5-8100-345aefff4ea5",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-09T17:43:36.893Z"
+    },
+    {
+      "id": "c0fefdcd-1f38-45ff-ac13-441efd2935e0",
+      "source": "quest",
+      "sourceId": "4490c3f9-d2aa-425d-a24b-2dd75a13a298",
+      "amount": -50,
+      "description": "Quest não realizada (5.0x): Afirmações",
+      "timestamp": "2026-02-19T17:16:06.330Z"
+    },
+    {
+      "id": "c341bb16-c0fd-46b9-b6cc-40cd9ae86917",
+      "source": "check-in",
+      "sourceId": "9730c8ef-4a03-4a77-928b-3c5b49478c78",
+      "amount": -20,
+      "description": "Check-in desfeito: aura",
+      "timestamp": "2026-02-09T17:43:34.606Z"
+    },
+    {
+      "id": "c7186be8-b3e4-4ebe-be6f-c4a6eee12a17",
+      "source": "check-in",
+      "sourceId": "9730c8ef-4a03-4a77-928b-3c5b49478c78",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-09T17:43:29.405Z"
+    },
+    {
+      "id": "c8013d53-fe92-4033-8e74-7e221734f68c",
+      "source": "quest",
+      "sourceId": "dd19148d-d39d-4e43-9573-05a13b4d9015",
+      "amount": 20,
+      "description": "Quest completada: Afirmações",
+      "timestamp": "2026-02-08T02:19:16.906Z"
+    },
+    {
+      "id": "c8ae9cf6-a959-430e-8f6e-51932431f04b",
+      "source": "check-in",
+      "sourceId": "786513b2-0cc7-4243-9d81-786ba2698795",
+      "amount": 25,
+      "description": "Check-in: Leitura",
+      "timestamp": "2026-02-09T22:57:55.343Z"
+    },
+    {
+      "id": "c96754ec-379f-4fb0-b8bb-129443913cbd",
+      "source": "quest",
+      "sourceId": "cef3cf8f-f0b5-43b8-b110-84163152d580",
+      "amount": 20,
+      "description": "Quest completada: Varrer chão",
+      "timestamp": "2026-02-06T20:42:53.588Z"
+    },
+    {
+      "id": "ced0b8f2-026d-4ae5-9dc3-d57bef059e7b",
+      "source": "quest",
+      "sourceId": "2977cf8e-0138-4bd5-bd40-0b58de1bef00",
+      "amount": -10,
+      "description": "Quest não realizada: Afirmações",
+      "timestamp": "2026-02-07T13:22:21.414Z"
+    },
+    {
+      "id": "cf644f37-76c3-499f-a119-aa01ebe3986f",
+      "source": "quest",
+      "sourceId": "dd19148d-d39d-4e43-9573-05a13b4d9015",
+      "amount": -20,
+      "description": "Quest desmarcada: Afirmações",
+      "timestamp": "2026-02-08T02:19:21.462Z"
+    },
+    {
+      "id": "d16a1207-9c05-4708-996e-f89a64defda0",
+      "source": "quest",
+      "sourceId": "69af3ffe-65ab-44b1-b98c-eda6a6145720",
+      "amount": 11,
+      "description": "Quest completada: Varrer chão",
+      "timestamp": "2026-02-07T21:48:39.442Z"
+    },
+    {
+      "id": "d713c472-d40f-4d8f-a3e4-eff4556d2ef5",
+      "source": "quest",
+      "sourceId": "b50b4858-f6e1-4612-a1d6-e953103715f5",
+      "amount": 11,
+      "description": "Quest completada: Varrer quarto",
+      "timestamp": "2026-02-19T22:39:14.936Z"
+    },
+    {
+      "id": "d753c6b3-4347-4c80-b906-eb33c1fb7b9e",
+      "source": "check-in",
+      "sourceId": "7c7b341a-ed0f-4a7f-8dc6-28930dab4b2f",
+      "amount": 25,
+      "description": "Check-in: Leitura",
+      "timestamp": "2026-02-09T22:39:35.609Z"
+    },
+    {
+      "id": "d7baefad-53c7-404c-a7fe-860043443c06",
+      "source": "check-in",
+      "sourceId": "e92617ff-a2c7-414c-b32e-44707f94304c",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-18T23:37:35.526Z"
+    },
+    {
+      "id": "d8538b39-ce72-40ca-83d1-d48e6fa4fce4",
+      "source": "check-in",
+      "sourceId": "683f7fec-4e17-4f32-aa9f-4df63e60477e",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-20T03:40:52.638Z"
+    },
+    {
+      "id": "d9a3e949-6788-4489-852c-d60c2ad56192",
+      "source": "quest",
+      "sourceId": "8bfae566-88d5-4a60-b12f-5c0c1a6b57e5",
+      "amount": -30,
+      "description": "Quest não realizada (3.0x): Afirmações",
+      "timestamp": "2026-02-11T20:17:42.055Z"
+    },
+    {
+      "id": "da715eb8-e6ed-4476-9b02-b74c091659ef",
+      "source": "quest",
+      "sourceId": "98c8538d-d67a-422b-98f3-f0d50423d8eb",
+      "amount": 11,
+      "description": "Quest completada: Varrer quarto",
+      "timestamp": "2026-02-09T22:39:20.105Z"
+    },
+    {
+      "id": "dcc1a59b-6158-4bb3-8da2-59e41234ab62",
+      "source": "check-in",
+      "sourceId": "9fd4ed8a-8e29-4d4e-8b2a-4af92b1379eb",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-13T22:30:51.127Z"
+    },
+    {
+      "id": "dee9a631-2569-4ca2-bf80-6a160c93d87c",
+      "source": "quest",
+      "sourceId": "4bd035ea-3551-4aef-a63c-7b37d84d3a5e",
+      "amount": 45,
+      "description": "Quest completada: Calistenia",
+      "timestamp": "2026-02-06T22:50:32.184Z"
+    },
+    {
+      "id": "e04c8920-e556-49da-a302-e9efcb9f988c",
+      "source": "check-in",
+      "sourceId": "2f8b2c95-120a-4b5d-bfbb-5ef59752d8d8",
+      "amount": -20,
+      "description": "Check-in desfeito: aura",
+      "timestamp": "2026-02-07T20:26:15.994Z"
+    },
+    {
+      "id": "e179e91d-2224-44c5-b15f-4772400bea99",
+      "source": "quest",
+      "sourceId": "54a50020-b116-4e26-aa02-2cc8b8deee01",
+      "amount": -50,
+      "description": "Quest não realizada (5.0x): Revisar Anki",
+      "timestamp": "2026-02-18T22:52:14.587Z"
+    },
+    {
+      "id": "e205f6cb-5eb5-4a4b-9cc5-ca7812e3dedb",
+      "source": "quest",
+      "sourceId": "f8aca181-d687-44db-a0d7-68b8129f1b10",
+      "amount": -12,
+      "description": "Quest não realizada (2.5x): Varrer quarto",
+      "timestamp": "2026-02-09T18:42:37.943Z"
+    },
+    {
+      "id": "e30a7539-10ce-41a2-b98b-199673868202",
+      "source": "check-in",
+      "sourceId": "0e8164ce-3ef6-4586-83f6-ed54f9c75a02",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-10T03:39:47.347Z"
+    },
+    {
+      "id": "e368e291-c89b-4858-9020-0c804a5533d3",
+      "source": "quest",
+      "sourceId": "803d338e-7995-4a3b-82b1-fba4e3bdf307",
+      "amount": -50,
+      "description": "Quest não realizada (5.0x): Afirmações",
+      "timestamp": "2026-02-18T22:52:14.609Z"
+    },
+    {
+      "id": "e5470f66-9734-4d4b-a258-0b2ca9aad041",
+      "source": "check-in",
+      "sourceId": "d77b62aa-d45f-417e-9139-40ad58627c9f",
+      "amount": 10,
+      "description": "Check-in: Organização",
+      "timestamp": "2026-02-09T22:39:34.789Z"
+    },
+    {
+      "id": "eee9ce75-5bc9-4abc-aae1-acc7f9e5cf78",
+      "source": "quest",
+      "sourceId": "3e1e312c-f271-4d39-b17c-b408404f2315",
+      "amount": 20,
+      "description": "Quest completada: Afirmações",
+      "timestamp": "2026-02-08T06:05:28.744Z"
+    },
+    {
+      "id": "eeec606e-690c-4c1f-96e1-277055d83b67",
+      "source": "check-in",
+      "sourceId": "9520739e-c5ab-4501-9c45-419cd3227dd3",
+      "amount": -20,
+      "description": "Check-in desfeito: aura",
+      "timestamp": "2026-02-07T20:13:58.789Z"
+    },
+    {
+      "id": "ef564408-2aa7-44bb-9ba1-cc0af6d2457a",
+      "source": "quest",
+      "sourceId": "8a831251-542c-4c4e-a119-d0f29c425df2",
+      "amount": 10,
+      "description": "Quest completada: Limpar e organizar gavetas",
+      "timestamp": "2026-02-19T22:39:13.726Z"
+    },
+    {
+      "id": "f3298c02-046a-4afe-b9c1-2f18fad7fc28",
+      "source": "quest",
+      "sourceId": "59317628-3319-4b4a-8820-544ce007c6fe",
+      "amount": -30,
+      "description": "Quest não realizada (3.0x): Afirmações",
+      "timestamp": "2026-02-10T03:38:19.296Z"
+    },
+    {
+      "id": "f47301ac-710f-43c9-bb8d-6e67c21a3bc7",
+      "source": "check-in",
+      "sourceId": "d0458ae1-3659-4276-b9fe-7f15c944f536",
+      "amount": 20,
+      "description": "Check-in: aura",
+      "timestamp": "2026-02-07T20:26:16.162Z"
+    },
+    {
+      "id": "f7cb519e-98ce-4793-9947-5f0d6bd2919d",
+      "source": "quest",
+      "sourceId": "69af3ffe-65ab-44b1-b98c-eda6a6145720",
+      "amount": 10,
+      "description": "Quest completada: Varrer quarto",
+      "timestamp": "2026-02-08T02:19:19.587Z"
+    },
+    {
+      "id": "fa8743f7-ee23-498e-9676-2bb180c0c7e4",
+      "source": "quest",
+      "sourceId": "3ed4e99a-611d-4401-9503-6940693bad9e",
+      "amount": 11,
+      "description": "Quest completada: Lavar louça",
+      "timestamp": "2026-02-07T00:06:39.649Z"
+    },
+    {
+      "id": "fe2c5159-23f7-499e-8ce9-44b605c1b2a2",
+      "source": "quest",
+      "sourceId": "158a4547-b41e-4181-a52b-23b9cbf344b8",
+      "amount": -22,
+      "description": "Quest não realizada (4.5x): Varrer quarto",
+      "timestamp": "2026-02-18T22:52:14.554Z"
+    }
+  ],
+  "dailySnapshots": [],
+  "aiInsights": [],
+  "activityGoals": [],
+  "goalProgress": [],
+  "debuffs": [],
+  "customCategories": [
+    {
+      "id": "160693d1-ba6e-45dd-b72f-900b79cd3b2e",
+      "key": "aura",
+      "name": "aura",
+      "icon": "TreePine",
+      "color": "#06B6D4",
+      "baseXP": 10,
+      "xpPerMinute": 1.5,
+      "goldPerSession": 5,
+      "attributeImpacts": [
+        {
+          "attribute": "discipline",
+          "gainPerMinute": 0.08
+        },
+        {
+          "attribute": "energy",
+          "gainPerMinute": 0.04
+        },
+        {
+          "attribute": "focus",
+          "gainPerMinute": 0.04
+        },
+        {
+          "attribute": "resilience",
+          "gainPerMinute": 0.04
+        }
+      ],
+      "isActive": true,
+      "createdAt": "2026-02-07T20:13:54.568Z",
+      "updatedAt": "2026-02-07T20:13:54.568Z"
+    },
+    {
+      "id": "1bb2385d-e584-45e2-b622-cbb69f84dd64",
+      "key": "organizacao",
+      "name": "Organização",
+      "icon": "Home",
+      "color": "#F59E0B",
+      "baseXP": 5,
+      "xpPerMinute": 1.5,
+      "goldPerSession": 5,
+      "attributeImpacts": [
+        {
+          "attribute": "discipline",
+          "gainPerMinute": 0.08
+        },
+        {
+          "attribute": "wisdom",
+          "gainPerMinute": 0.04
+        }
+      ],
+      "isActive": true,
+      "createdAt": "2026-02-06T20:02:07.366Z",
+      "updatedAt": "2026-02-06T20:02:07.366Z"
+    }
+  ],
+  "checkIns": [
+    {
+      "id": "08215221-e0d7-4b61-afbc-f8829d490567",
+      "category": "aura",
+      "date": "2026-02-08",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.19999999999999998,
+        "focus": 0.19999999999999998,
+        "resilience": 0.19999999999999998
+      },
+      "createdAt": "2026-02-08T03:59:16.175Z",
+      "updatedAt": "2026-02-08T03:59:16.175Z"
+    },
+    {
+      "id": "0e8164ce-3ef6-4586-83f6-ed54f9c75a02",
+      "category": "aura",
+      "date": "2026-02-10",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.19999999999999998,
+        "focus": 0.19999999999999998,
+        "resilience": 0.19999999999999998
+      },
+      "createdAt": "2026-02-10T03:39:47.347Z",
+      "updatedAt": "2026-02-10T03:39:47.347Z"
+    },
+    {
+      "id": "27a3dba5-3344-4f1a-ab4f-b3f7ac2f63eb",
+      "category": "aura",
+      "date": "2026-02-04",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.19999999999999998,
+        "focus": 0.19999999999999998,
+        "resilience": 0.19999999999999998
+      },
+      "createdAt": "2026-02-09T17:43:31.036Z",
+      "updatedAt": "2026-02-09T17:43:31.036Z"
+    },
+    {
+      "id": "4b8b2c39-aabb-40a1-a25c-08677f90dfd7",
+      "category": "study",
+      "date": "2026-02-13",
+      "xpEarned": 30,
+      "goldEarned": 10,
+      "attributeGains": {
+        "knowledge": 0.6000000000000001,
+        "focus": 0.44999999999999996,
+        "wisdom": 0.30000000000000004,
+        "discipline": 0.15000000000000002
+      },
+      "createdAt": "2026-02-13T22:30:52.989Z",
+      "updatedAt": "2026-02-13T22:30:52.989Z"
+    },
+    {
+      "id": "4d43efca-0622-4f2f-a164-8cdf72a01159",
+      "category": "organizacao",
+      "date": "2026-02-19",
+      "xpEarned": 10,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "wisdom": 0.6
+      },
+      "createdAt": "2026-02-19T22:52:20.117Z",
+      "updatedAt": "2026-02-19T22:52:20.117Z"
+    },
+    {
+      "id": "57d63e39-29f3-4988-90b3-9a19a2b5922b",
+      "category": "meditation",
+      "date": "2026-02-09",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "focus": 0.5249999999999999,
+        "wisdom": 0.375,
+        "energy": 0.30000000000000004,
+        "resilience": 0.30000000000000004
+      },
+      "createdAt": "2026-02-10T03:39:51.226Z",
+      "updatedAt": "2026-02-10T03:39:51.226Z"
+    },
+    {
+      "id": "5a2d443a-00df-4a1a-a736-a2476fea04fa",
+      "category": "reading",
+      "date": "2026-02-05",
+      "xpEarned": 25,
+      "goldEarned": 10,
+      "attributeGains": {
+        "knowledge": 0.42,
+        "wisdom": 0.36,
+        "focus": 0.24,
+        "discipline": 0.18
+      },
+      "createdAt": "2026-02-06T04:37:55.788Z",
+      "updatedAt": "2026-02-06T04:37:55.788Z"
+    },
+    {
+      "id": "683f7fec-4e17-4f32-aa9f-4df63e60477e",
+      "category": "aura",
+      "date": "2026-02-20",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.2,
+        "focus": 0.2,
+        "resilience": 0.2
+      },
+      "createdAt": "2026-02-20T03:40:52.638Z",
+      "updatedAt": "2026-02-20T03:40:52.638Z"
+    },
+    {
+      "id": "786513b2-0cc7-4243-9d81-786ba2698795",
+      "category": "reading",
+      "date": "2026-02-09",
+      "xpEarned": 25,
+      "goldEarned": 10,
+      "attributeGains": {
+        "knowledge": 0.42,
+        "wisdom": 0.36,
+        "focus": 0.24,
+        "discipline": 0.18
+      },
+      "createdAt": "2026-02-09T22:57:55.343Z",
+      "updatedAt": "2026-02-09T22:57:55.343Z"
+    },
+    {
+      "id": "8bea2ce8-8522-4554-b1c6-1a242bba8863",
+      "category": "aura",
+      "date": "2026-02-19",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.2,
+        "focus": 0.2,
+        "resilience": 0.2
+      },
+      "createdAt": "2026-02-19T17:49:35.103Z",
+      "updatedAt": "2026-02-19T17:49:35.103Z"
+    },
+    {
+      "id": "8f843100-1f14-4fbe-a4f8-135aa1be4e59",
+      "category": "organizacao",
+      "date": "2026-02-07",
+      "xpEarned": 10,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "wisdom": 0.6
+      },
+      "createdAt": "2026-02-07T15:49:13.388Z",
+      "updatedAt": "2026-02-07T15:49:13.388Z"
+    },
+    {
+      "id": "900d8ea7-237d-478b-90f7-0e39d5702959",
+      "category": "aura",
+      "date": "2026-02-12",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.19999999999999998,
+        "focus": 0.19999999999999998,
+        "resilience": 0.19999999999999998
+      },
+      "createdAt": "2026-02-13T22:31:09.023Z",
+      "updatedAt": "2026-02-13T22:31:09.023Z"
+    },
+    {
+      "id": "ab9d66f2-e603-4dfa-99e9-051826a3827b",
+      "category": "workout",
+      "date": "2026-02-06",
+      "xpEarned": 35,
+      "goldEarned": 15,
+      "attributeGains": {
+        "strength": 0.8,
+        "energy": 0.6,
+        "discipline": 0.4,
+        "resilience": 0.2
+      },
+      "createdAt": "2026-02-06T22:50:34.806Z",
+      "updatedAt": "2026-02-06T22:50:34.806Z"
+    },
+    {
+      "id": "ae9a0ef9-c4f3-4e38-9c89-f4617a5f30e5",
+      "category": "aura",
+      "date": "2026-02-18",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.2,
+        "focus": 0.2,
+        "resilience": 0.2
+      },
+      "createdAt": "2026-02-18T23:37:30.906Z",
+      "updatedAt": "2026-02-18T23:37:30.906Z"
+    },
+    {
+      "id": "c2d26aa3-b03c-4bb5-8100-345aefff4ea5",
+      "category": "aura",
+      "date": "2026-02-02",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.19999999999999998,
+        "focus": 0.19999999999999998,
+        "resilience": 0.19999999999999998
+      },
+      "createdAt": "2026-02-09T17:43:36.893Z",
+      "updatedAt": "2026-02-09T17:43:36.893Z"
+    },
+    {
+      "id": "c595fdf7-e83a-4db0-bdc1-92c31f869d20",
+      "category": "organizacao",
+      "date": "2026-02-06",
+      "xpEarned": 10,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "wisdom": 0.6
+      },
+      "createdAt": "2026-02-06T20:43:16.974Z",
+      "updatedAt": "2026-02-06T20:43:16.974Z"
+    },
+    {
+      "id": "c8ca7257-3f7c-4f7b-80e2-7bdb813c1d0c",
+      "category": "aura",
+      "date": "2026-02-03",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.19999999999999998,
+        "focus": 0.19999999999999998,
+        "resilience": 0.19999999999999998
+      },
+      "createdAt": "2026-02-09T17:43:30.139Z",
+      "updatedAt": "2026-02-09T17:43:30.139Z"
+    },
+    {
+      "id": "d0458ae1-3659-4276-b9fe-7f15c944f536",
+      "category": "aura",
+      "date": "2026-02-07",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.19999999999999998,
+        "focus": 0.19999999999999998,
+        "resilience": 0.19999999999999998
+      },
+      "createdAt": "2026-02-07T20:26:16.162Z",
+      "updatedAt": "2026-02-07T20:26:16.162Z"
+    },
+    {
+      "id": "d548d83a-fae9-414d-b305-f47b9f167acd",
+      "category": "meditation",
+      "date": "2026-02-06",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "focus": 0.5249999999999999,
+        "wisdom": 0.375,
+        "energy": 0.30000000000000004,
+        "resilience": 0.30000000000000004
+      },
+      "createdAt": "2026-02-06T23:09:37.436Z",
+      "updatedAt": "2026-02-06T23:09:37.436Z"
+    },
+    {
+      "id": "d77b62aa-d45f-417e-9139-40ad58627c9f",
+      "category": "organizacao",
+      "date": "2026-02-09",
+      "xpEarned": 10,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "wisdom": 0.6
+      },
+      "createdAt": "2026-02-09T22:39:34.789Z",
+      "updatedAt": "2026-02-09T22:39:34.789Z"
+    },
+    {
+      "id": "e92617ff-a2c7-414c-b32e-44707f94304c",
+      "category": "aura",
+      "date": "2026-02-17",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.2,
+        "focus": 0.2,
+        "resilience": 0.2
+      },
+      "createdAt": "2026-02-18T23:37:35.526Z",
+      "updatedAt": "2026-02-18T23:37:35.526Z"
+    },
+    {
+      "id": "ff08d413-1b61-4843-b404-46297c86e7cf",
+      "category": "aura",
+      "date": "2026-02-05",
+      "xpEarned": 20,
+      "goldEarned": 8,
+      "attributeGains": {
+        "discipline": 0.4,
+        "energy": 0.19999999999999998,
+        "focus": 0.19999999999999998,
+        "resilience": 0.19999999999999998
+      },
+      "createdAt": "2026-02-09T17:43:32.257Z",
+      "updatedAt": "2026-02-09T17:43:32.257Z"
+    }
+  ],
+  "checkInStreaks": [
+    {
+      "category": "aura",
+      "currentStreak": 4,
+      "longestStreak": 4,
+      "lastCheckInDate": "2026-02-20",
+      "totalCheckIns": 12
+    },
+    {
+      "category": "meditation",
+      "currentStreak": 1,
+      "longestStreak": 1,
+      "lastCheckInDate": "2026-02-09",
+      "totalCheckIns": 2
+    },
+    {
+      "category": "organizacao",
+      "currentStreak": 1,
+      "longestStreak": 2,
+      "lastCheckInDate": "2026-02-19",
+      "totalCheckIns": 4
+    },
+    {
+      "category": "reading",
+      "currentStreak": 1,
+      "longestStreak": 1,
+      "lastCheckInDate": "2026-02-09",
+      "totalCheckIns": 2
+    },
+    {
+      "category": "study",
+      "currentStreak": 1,
+      "longestStreak": 1,
+      "lastCheckInDate": "2026-02-13",
+      "totalCheckIns": 1
+    },
+    {
+      "category": "workout",
+      "currentStreak": 1,
+      "longestStreak": 1,
+      "lastCheckInDate": "2026-02-06",
+      "totalCheckIns": 1
+    }
+  ],
+  "ankiDecks": [
+    {
+      "name": "Interação Humano-Computador",
+      "newCount": 0,
+      "learningCount": 0,
+      "reviewCount": 0,
+      "totalCards": 0,
+      "matureCards": 0,
+      "youngCards": 0,
+      "averageInterval": 0,
+      "lastSynced": "2026-02-14T17:35:54.487Z"
+    }
+  ],
+  "ankiReviews": [],
+  "ankiSnapshots": [
+    {
+      "id": "a7733087-77a2-4f47-8216-7659c14e555b",
+      "date": "2026-02-14",
+      "totalReviews": 0,
+      "totalNew": 0,
+      "totalTime": 0,
+      "accuracy": 0,
+      "matureCards": 0,
+      "youngCards": 0,
+      "isOnline": true
+    },
+    {
+      "id": "bc123db6-5104-4981-9bde-ee8d26301ef3",
+      "date": "2026-02-13",
+      "totalReviews": 0,
+      "totalNew": 0,
+      "totalTime": 0,
+      "accuracy": 0,
+      "matureCards": 0,
+      "youngCards": 0,
+      "isOnline": true
+    }
+  ]
+}

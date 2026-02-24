@@ -252,10 +252,34 @@ async function removeNegativeXPEvents() {
   }
 }
 
+// Remove xpEvents de check-in órfãos: positivos cujo check-in foi desfeito (sourceId não existe mais)
+async function removeOrphanedCheckInXPEvents() {
+  const KEY = 'cleanup_orphaned_checkin_xpevents_20260223';
+  if (localStorage.getItem(KEY)) return;
+  try {
+    const checkInEvents = await db.xpEvents
+      .filter(e => e.source === 'check-in' && e.amount > 0 && !!e.sourceId)
+      .toArray();
+    const orphanIds: string[] = [];
+    for (const event of checkInEvents) {
+      const checkIn = await db.checkIns.get(event.sourceId!);
+      if (!checkIn) orphanIds.push(event.id);
+    }
+    if (orphanIds.length > 0) {
+      await db.xpEvents.bulkDelete(orphanIds);
+      console.log(`[Cleanup] Removidos ${orphanIds.length} xpEvents de check-in órfãos`);
+    }
+    localStorage.setItem(KEY, 'done');
+  } catch (error) {
+    console.error('[Cleanup] Erro ao remover xpEvents órfãos:', error);
+  }
+}
+
 // Executar cleanup ao carregar
 db.on('ready', () => {
   runOneTimeCleanup();
   removeNegativeXPEvents();
+  removeOrphanedCheckInXPEvents();
 });
 
 // Auto-fail de quests atrasadas (roda após o DB estar pronto, fora do on-ready)
