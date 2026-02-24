@@ -1009,7 +1009,14 @@ function CanvasCourseSelectModal({
     try {
       const result = await canvasService.importCourses(Array.from(selected), courses);
       clearIgnoredCanvasCourseIds();
-      onImported(result.added > 0 ? `${result.added} matéria(s) adicionada(s).` : 'Nenhuma matéria nova adicionada.');
+
+      // Sincroniza provas/trabalhos automaticamente após importar matérias
+      const sync = await canvasService.syncGrades();
+      const parts: string[] = [];
+      if (result.added > 0) parts.push(`${result.added} matéria(s) adicionada(s)`);
+      if (sync.examsCreated > 0) parts.push(`${sync.examsCreated} prova(s)/trabalho(s) importado(s)`);
+      if (sync.gradesUpdated > 0) parts.push(`${sync.gradesUpdated} nota(s) atualizada(s)`);
+      onImported(parts.length > 0 ? parts.join(', ') + '.' : 'Nenhuma alteração.');
       onClose();
     } finally {
       setIsSaving(false);
@@ -1090,7 +1097,7 @@ function CanvasCourseSelectModal({
         <div className="flex gap-2 pt-1 border-t border-border">
           <Button className="flex-1" onClick={handleSave} isLoading={isSaving} disabled={isLoading || courses.length === 0}>
             <CheckSquare size={15} className="mr-1.5" />
-            Salvar seleção ({selected.size} matérias)
+            {isSaving ? 'Importando matérias e provas...' : `Importar (${selected.size} matérias)`}
           </Button>
           <Button variant="secondary" onClick={onClose}>Cancelar</Button>
         </div>
