@@ -335,9 +335,11 @@ export function Calendar() {
                         <div className="flex items-center justify-between px-2 py-1.5 border-b border-border/50">
                           <span
                             className={`text-sm font-bold ${
-                              selectedClass
+                              todayClass
+                                ? 'text-accent'
+                                : selectedClass
                                 ? 'text-white'
-                                : 'text-accent'
+                                : 'text-gray-400'
                             }`}
                           >
                             {day}
