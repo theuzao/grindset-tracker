@@ -327,6 +327,9 @@ export async function exportAllData(): Promise<object> {
     ankiDecks: await db.ankiDecks.toArray(),
     ankiReviews: await db.ankiReviews.toArray(),
     ankiSnapshots: await db.ankiSnapshots.toArray(),
+    subjects: await db.subjects.toArray(),
+    subjectTopics: await db.subjectTopics.toArray(),
+    subjectExams: await db.subjectExams.toArray(),
   };
 }
 
@@ -603,6 +606,9 @@ export async function importAllData(data: Partial<{
   ankiDecks: AnkiDeck[];
   ankiReviews: AnkiReview[];
   ankiSnapshots: AnkiSnapshot[];
+  subjects: Subject[];
+  subjectTopics: SubjectTopic[];
+  subjectExams: SubjectExam[];
 }>): Promise<void> {
   // Importar dados (merge via bulkPut)
   if (data.character?.length) {
@@ -627,5 +633,7 @@ export async function importAllData(data: Partial<{
   if (data.ankiDecks?.length) await db.ankiDecks.bulkPut(data.ankiDecks);
   if (data.ankiReviews?.length) await db.ankiReviews.bulkPut(data.ankiReviews);
   if (data.ankiSnapshots?.length) await db.ankiSnapshots.bulkPut(data.ankiSnapshots);
-
+  if (data.subjects?.length) await db.subjects.bulkPut(data.subjects);
+  if (data.subjectTopics?.length) await db.subjectTopics.bulkPut(data.subjectTopics);
+  if (data.subjectExams?.length) await db.subjectExams.bulkPut(data.subjectExams);
 }
