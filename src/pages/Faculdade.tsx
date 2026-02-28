@@ -578,8 +578,6 @@ function ExamChip({
 // Subject Grid Card
 // ============================================
 
-const TOPIC_PREVIEW = 4;
-
 function SubjectGridCard({
   subject,
   onView,
@@ -593,24 +591,25 @@ function SubjectGridCard({
 }) {
   const topics = useSubjectTopics(subject.id);
   const exams = useSubjectExams(subject.id);
-
   const total = topics?.length ?? 0;
   const done = topics?.filter(t => t.isDone).length ?? 0;
   const percentage = total > 0 ? Math.round((done / total) * 100) : 0;
 
-  const nextExam = exams?.find(e => daysUntil(e.scheduledDate) >= 0);
-  const nextExamDays = nextExam ? daysUntil(nextExam.scheduledDate) : null;
+  const gradedExams = exams?.filter(e => e.grade !== undefined) ?? [];
+  const hasGrades = gradedExams.length > 0;
+
+  // All subjects are /100 — grade IS the points earned
+  const earnedPoints = gradedExams.reduce((sum, e) => sum + (e.grade ?? 0), 0);
+
   const urgentExams = exams
     ?.filter(e => { const d = daysUntil(e.scheduledDate); return d >= 0 && d <= 7; })
     .sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate))
     ?? [];
 
-  // Preview: show context around the current progress point
+  // Topic preview: 3 items around first pending
   const firstPendingIdx = topics?.findIndex(t => !t.isDone) ?? -1;
-  const previewStart = firstPendingIdx <= 0
-    ? 0
-    : Math.max(0, firstPendingIdx - 1);
-  const previewTopics = topics?.slice(previewStart, previewStart + TOPIC_PREVIEW) ?? [];
+  const previewStart = firstPendingIdx <= 0 ? 0 : Math.max(0, firstPendingIdx - 1);
+  const previewTopics = topics?.slice(previewStart, previewStart + 3) ?? [];
   const hiddenCount = total - previewStart - previewTopics.length;
 
   return (
@@ -641,23 +640,67 @@ function SubjectGridCard({
           </span>
         </div>
 
-        {/* Progress bar */}
-        {total > 0 && (
-          <div className="space-y-1">
-            <div className="h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${percentage}%`, backgroundColor: subject.color }}
-              />
+        {/* Grade block */}
+        {hasGrades ? (
+          <div className="rounded-xl bg-bg-tertiary/60 px-3 py-2.5 flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-0.5">Pontos conquistados</p>
+              <div className="flex items-baseline gap-1">
+                <span className={`text-4xl font-bold tabular-nums leading-none ${
+                  earnedPoints >= 70 ? 'text-green-400'
+                  : earnedPoints >= 50 ? 'text-yellow-400'
+                  : 'text-red-400'
+                }`}>
+                  {earnedPoints % 1 === 0 ? earnedPoints : earnedPoints.toFixed(1)}
+                </span>
+                <span className="text-xs text-gray-600">/100</span>
+              </div>
+              {/* Breakdown: last 3 graded exams */}
+              {gradedExams.length > 0 && (
+                <div className="flex items-center gap-2.5 mt-1.5 flex-wrap">
+                  {gradedExams.slice(-3).map(e => (
+                    <span key={e.id} className="text-xs text-gray-500 leading-none">
+                      <span className="text-gray-400">
+                        {e.title.length > 12 ? e.title.slice(0, 10) + '…' : e.title}
+                      </span>
+                      {' '}
+                      <span className="text-gray-300 font-medium">
+                        {(e.grade ?? 0) % 1 === 0 ? (e.grade ?? 0) : (e.grade ?? 0).toFixed(1)}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="flex justify-between text-xs text-gray-600">
-              <span>{done} concluídos</span>
-              <span>{total} total</span>
-            </div>
+            {hasGrades && (
+              <span className={`text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider shrink-0 ${
+                earnedPoints >= 50
+                  ? 'bg-green-500/15 text-green-400'
+                  : 'bg-red-500/15 text-red-400'
+              }`}>
+                {earnedPoints >= 50 ? 'Aprovado' : 'Reprovado'}
+              </span>
+            )}
           </div>
+        ) : (
+          /* No grades yet: topic progress bar */
+          total > 0 && (
+            <div className="space-y-1">
+              <div className="h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${percentage}%`, backgroundColor: subject.color }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-gray-600">
+                <span>{done} concluídos</span>
+                <span>{total} tópicos</span>
+              </div>
+            </div>
+          )
         )}
 
-        {/* Next urgent exam banner */}
+        {/* Urgent exam */}
         {urgentExams.length > 0 && (() => {
           const next = urgentExams[0];
           const d = daysUntil(next.scheduledDate);
@@ -666,7 +709,7 @@ function SubjectGridCard({
               <span className="text-xs text-gray-300 truncate flex-1">
                 {next.title}{' '}
                 <span className={`font-semibold ${d <= 1 ? 'text-red-400' : d <= 3 ? 'text-red-500' : 'text-red-600'}`}>
-                  {d === 0 ? 'hoje!' : `em ${d} dia${d !== 1 ? 's' : ''}`}
+                  {d === 0 ? 'hoje!' : `em ${d}d`}
                 </span>
               </span>
               <span className={`text-xs px-1.5 py-0.5 rounded font-medium shrink-0 ${EXAM_TYPE_COLORS[next.type]}`}>
@@ -691,11 +734,9 @@ function SubjectGridCard({
                 ) : (
                   <Square size={13} className="text-gray-600 shrink-0 mt-0.5" />
                 )}
-                <span
-                  className={`text-xs leading-snug line-clamp-1 ${
-                    topic.isDone ? 'text-green-400/70 line-through' : 'text-gray-300'
-                  }`}
-                >
+                <span className={`text-xs leading-snug line-clamp-1 ${
+                  topic.isDone ? 'text-green-400/70 line-through' : 'text-gray-300'
+                }`}>
                   {topic.title}
                 </span>
               </div>
@@ -710,19 +751,8 @@ function SubjectGridCard({
           </p>
         ) : null}
 
-        {/* Bottom: badges + actions */}
-        <div className="mt-auto space-y-2.5">
-          {/* Badges */}
-          {nextExamDays !== null && nextExamDays > 7 && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs flex items-center gap-1 text-gray-500">
-                <Calendar size={11} />
-                {`${nextExamDays}d`}
-              </span>
-            </div>
-          )}
-
-          {/* Footer actions */}
+        {/* Footer actions */}
+        <div className="mt-auto">
           <div
             className="flex items-center gap-1.5 pt-2.5 border-t border-border"
             onClick={(e) => e.stopPropagation()}
@@ -1231,7 +1261,7 @@ function ExamsTab({
 
           <div className="flex items-center justify-between pt-3 border-t border-border mt-1">
             <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              Média Ponderada
+              Total de pontos
             </span>
             <div className="flex items-center gap-2">
               {average !== null && average < 5 && (
@@ -1248,7 +1278,7 @@ function ExamsTab({
                   : 'text-red-400'
                 }`}
               >
-                {average !== null ? `${average.toFixed(2)}/10` : '–'}
+                {average !== null ? average.toFixed(1) : '–'}
               </span>
             </div>
           </div>
@@ -1333,7 +1363,6 @@ function ExamRow({ exam, subjectName, onEdit }: { exam: SubjectExam; subjectName
               {days === 0 ? 'hoje' : `${days}d`}
             </span>
           )}
-          <span>• Peso {exam.weight}</span>
         </div>
       </div>
 
@@ -1496,17 +1525,7 @@ function ExamForm({ subjectId, exam, onClose }: { subjectId: string; exam?: Subj
           className="px-3 py-1.5 bg-bg-primary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent"
         />
         <div>
-          <label className="text-xs text-gray-500 mb-1 block">Peso</label>
-          <input
-            type="number"
-            min={1}
-            value={weight}
-            onChange={(e) => setWeight(parseFloat(e.target.value) || 1)}
-            className="w-full px-3 py-1.5 bg-bg-primary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent"
-          />
-        </div>
-        <div>
-          <label className="text-xs text-gray-500 mb-1 block">Nota máx.</label>
+          <label className="text-xs text-gray-500 mb-1 block">Pontuação máx.</label>
           <input
             type="number"
             min={1}
