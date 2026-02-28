@@ -279,7 +279,7 @@ export const questRepository = {
     const xpPenalty = Math.floor(DIFFICULTY_XP_PENALTY_MAP[quest.difficulty] * catMult * multiplier);
     const goldPenalty = Math.floor(DIFFICULTY_GOLD_PENALTY_MAP[quest.difficulty] * catMult * multiplier);
 
-    await characterRepository.addPenalty(xpPenalty);
+    await characterRepository.addPenalty(xpPenalty, { source: 'quest', label: quest.title });
     await characterRepository.removeGold(goldPenalty);
 
     // Registrar evento de XP negativo

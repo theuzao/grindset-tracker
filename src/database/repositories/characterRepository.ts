@@ -7,7 +7,7 @@ import {
   getLevelFromTotalXP,
   getTitleForLevel,
 } from '@/features/gamification/constants';
-import { addLevelUpNotification } from '@/utils/notifications';
+import { addLevelUpNotification, addLevelDownNotification } from '@/utils/notifications';
 import { dispatchXPFeedback } from '@/utils/xpFeedback';
 
 function createInitialAttributes(): Record<AttributeType, Attribute> {
@@ -79,13 +79,19 @@ export const characterRepository = {
 
     if (newLevel > previousLevel) {
       addLevelUpNotification(newLevel, newTitle);
-    }
-
-    if (feedbackMeta) {
+      dispatchXPFeedback({
+        xp: amount,
+        source: 'level',
+        label: feedbackMeta?.label ?? 'Level Up!',
+        type: 'levelup',
+        levelChange: { from: previousLevel, to: newLevel, title: newTitle },
+      });
+    } else if (feedbackMeta) {
       dispatchXPFeedback({
         xp: amount,
         source: feedbackMeta.source,
         label: feedbackMeta.label,
+        type: 'gain',
       });
     }
 
@@ -99,10 +105,15 @@ export const characterRepository = {
   },
 
   // Penalidade: drena XP até o piso de 0 (sem dívida acumulada)
-  async addPenalty(amount: number): Promise<void> {
+  async addPenalty(
+    amount: number,
+    meta?: { source: string; label: string }
+  ): Promise<void> {
     const character = await this.get();
     if (!character) throw new Error('Character not found');
 
+    const previousLevel = character.level;
+    const actualLost = Math.min(amount, character.totalXP);
     const newTotalXP = Math.max(0, character.totalXP - amount);
     const newLevel = getLevelFromTotalXP(newTotalXP);
     const newTitle = getTitleForLevel(newLevel);
@@ -114,6 +125,28 @@ export const characterRepository = {
       title: newTitle,
       updatedAt: new Date().toISOString(),
     });
+
+    // Toast de perda de XP
+    if (actualLost > 0 && meta) {
+      dispatchXPFeedback({
+        xp: -actualLost,
+        source: meta.source,
+        label: meta.label,
+        type: 'loss',
+      });
+    }
+
+    // Toast e notificação de descida de nível
+    if (newLevel < previousLevel) {
+      addLevelDownNotification(newLevel, newTitle);
+      dispatchXPFeedback({
+        xp: 0,
+        source: 'level',
+        label: newTitle,
+        type: 'leveldown',
+        levelChange: { from: previousLevel, to: newLevel, title: newTitle },
+      });
+    }
   },
 
   async addGold(amount: number): Promise<void> {
@@ -128,6 +161,7 @@ export const characterRepository = {
   async removeXP(amount: number): Promise<void> {
     const character = await this.get();
     if (!character) throw new Error('Character not found');
+    const previousLevel = character.level;
     const newTotalXP = Math.max(0, character.totalXP - amount);
     const newLevel = getLevelFromTotalXP(newTotalXP);
     const newTitle = getTitleForLevel(newLevel);
@@ -138,6 +172,18 @@ export const characterRepository = {
       title: newTitle,
       updatedAt: new Date().toISOString(),
     });
+
+    // Toast de descida de nível (remoção de XP pode causar isso ao desfazer quest)
+    if (newLevel < previousLevel) {
+      addLevelDownNotification(newLevel, newTitle);
+      dispatchXPFeedback({
+        xp: 0,
+        source: 'level',
+        label: newTitle,
+        type: 'leveldown',
+        levelChange: { from: previousLevel, to: newLevel, title: newTitle },
+      });
+    }
   },
 
   async removeGold(amount: number): Promise<void> {

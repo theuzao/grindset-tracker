@@ -21,6 +21,7 @@ import type {
   SubjectExam,
 } from '@/types';
 import type { AnkiDeck, AnkiReview, AnkiSnapshot } from '@/features/anki/types';
+import type { SyncMetadata, SyncChange } from './syncMetadata';
 
 // Helper para obter data local no formato YYYY-MM-DD (evita problemas de timezone com toISOString)
 export function getLocalDateString(date: Date = new Date()): string {
@@ -53,6 +54,8 @@ export class LifeQuestDatabase extends Dexie {
   subjects!: Table<Subject>;
   subjectTopics!: Table<SubjectTopic>;
   subjectExams!: Table<SubjectExam>;
+  syncMetadata!: Table<SyncMetadata>;
+  syncChanges!: Table<SyncChange>;
 
   constructor() {
     super('LifeQuestDB');
@@ -172,6 +175,39 @@ export class LifeQuestDatabase extends Dexie {
       subjects: 'id, semester, isActive, canvasId',
       subjectTopics: 'id, subjectId, [subjectId+isDone]',
       subjectExams: 'id, subjectId, scheduledDate, canvasId',
+    });
+
+    // Versão 7: sistema de sincronização multi-dispositivo
+    this.version(7).stores({
+      character: 'id',
+      activities: 'id, category, completedAt, [category+completedAt]',
+      quests: 'id, status, scheduledDate, category, [status+scheduledDate]',
+      objectives: 'id, status, timeframe, targetDate, [status+timeframe]',
+      reflections: 'id, type, date, *tags',
+      weeklyReports: 'id, weekStart, weekEnd',
+      achievements: 'id, code, category, isUnlocked',
+      xpEvents: 'id, source, timestamp',
+      dailySnapshots: 'id, date',
+      aiInsights: 'id, type, createdAt, isRead',
+      activityGoals: 'id, category, recurrence, isActive, [category+recurrence]',
+      goalProgress: 'goalId, date, [goalId+date]',
+      debuffs: 'id, type, isActive, expiresAt',
+      customCategories: 'id, key, isActive',
+      checkIns: 'id, category, date, [category+date]',
+      checkInStreaks: 'category',
+      ankiDecks: 'name, lastSynced',
+      ankiReviews: 'id, deckName, date, source, [deckName+date]',
+      ankiSnapshots: 'id, date',
+      subjects: 'id, semester, isActive, canvasId',
+      subjectTopics: 'id, subjectId, [subjectId+isDone]',
+      subjectExams: 'id, subjectId, scheduledDate, canvasId',
+      syncMetadata: '[entityId+table]',
+      syncChanges: 'id, table, timestamp, synced, [table+synced]',
+    });
+
+    // Versão 8: corrige índice composto booleano [table+synced] que causava DexieError
+    this.version(8).stores({
+      syncChanges: 'id, table, timestamp, synced',
     });
   }
 }

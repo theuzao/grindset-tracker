@@ -4,6 +4,7 @@ export interface LevelUpNotification {
   title: string;
   date: string; // YYYY-MM-DD
   read: boolean;
+  direction?: 'up' | 'down';
 }
 
 const STORAGE_KEY = 'levelup_notifications';
@@ -27,11 +28,30 @@ export function addLevelUpNotification(level: number, title: string): void {
   const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   notifications.unshift({
-    id: `lvl-${level}-${Date.now()}`,
+    id: `lvl-up-${level}-${Date.now()}`,
     level,
     title,
     date,
     read: false,
+    direction: 'up',
+  });
+
+  saveNotifications(notifications);
+  window.dispatchEvent(new Event('notifications-updated'));
+}
+
+export function addLevelDownNotification(level: number, title: string): void {
+  const notifications = getNotifications();
+  const now = new Date();
+  const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  notifications.unshift({
+    id: `lvl-down-${level}-${Date.now()}`,
+    level,
+    title,
+    date,
+    read: false,
+    direction: 'down',
   });
 
   saveNotifications(notifications);

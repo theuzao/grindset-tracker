@@ -1,7 +1,12 @@
+export type XPFeedbackType = 'gain' | 'loss' | 'levelup' | 'leveldown';
+
 export interface XPFeedbackEvent {
   xp: number;
   source: string;
   label: string;
+  type?: XPFeedbackType;
+  /** Para level-up/down: nível anterior e novo */
+  levelChange?: { from: number; to: number; title: string };
 }
 
 export function dispatchXPFeedback(data: XPFeedbackEvent): void {

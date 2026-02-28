@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRINDSET — Configurações</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --surface3: #1e1e28;
+    --border: rgba(255,255,255,0.07);
+    --accent: #7c6fff;
+    --accent2: #ff6b6b;
+    --accent3: #4ecdc4;
+    --accent4: #ffd93d;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --danger: #ff4757;
+    --success: #2ecc71;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* Ambient glow */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(124,111,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .app {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 0 20px rgba(124,111,255,0.4);
+  }
+
+  .logo-text {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    background: linear-gradient(90deg, var(--text) 0%, var(--muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .version-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .save-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    box-shadow: 0 0 20px rgba(124,111,255,0.3);
+  }
+
+  .save-btn:hover {
+    background: #9580ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 24px rgba(124,111,255,0.5);
+  }
+
+  /* Page title */
+  .page-title {
+    margin-bottom: 48px;
+  }
+
+  .page-title h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .page-title h1 span {
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-title p {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+  }
+
+  /* Grid layout */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .grid-3 {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .card:hover {
+    border-color: rgba(255,255,255,0.13);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(124,111,255,0.3), transparent);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .icon-purple { background: rgba(124,111,255,0.15); }
+  .icon-teal { background: rgba(78,205,196,0.15); }
+  .icon-yellow { background: rgba(255,217,61,0.15); }
+  .icon-red { background: rgba(255,71,87,0.15); }
+  .icon-green { background: rgba(46,204,113,0.15); }
+  .icon-orange { background: rgba(255,107,107,0.15); }
+
+  .card-title h2 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .card-action-btn {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .card-action-btn:hover {
+    background: rgba(124,111,255,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Form elements */
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  .field-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .field-label .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  input[type="text"], input[type="url"], input[type="number"], input[type="password"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 11px 14px;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  input:focus {
+    border-color: rgba(124,111,255,0.5);
+    background: rgba(124,111,255,0.05);
+    box-shadow: 0 0 0 3px rgba(124,111,255,0.1);
+  }
+
+  /* Toggle */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toggle-row:last-child { border-bottom: none; }
+
+  .toggle-info h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .toggle-info p {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .toggle {
+    width: 44px;
+    height: 24px;
+    background: var(--surface3);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .toggle.on {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(124,111,255,0.4);
+  }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+  }
+
+  .toggle.on::after { transform: translateX(20px); }
+
+  /* Color swatch section */
+  .color-section {
+    margin-bottom: 20px;
+  }
+
+  .color-section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .color-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .swatch.selected {
+    border-color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(255,255,255,0.3);
+  }
+
+  .swatch::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .swatch.selected::after { opacity: 1; }
+
+  /* Category pills */
+  .category-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .category-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .pill-study { background: rgba(124,111,255,0.15); color: #a78bfa; border-color: rgba(124,111,255,0.2); }
+  .pill-academy { background: rgba(78,205,196,0.15); color: #4ecdc4; border-color: rgba(78,205,196,0.2); }
+  .pill-work { background: rgba(255,217,61,0.15); color: #ffd93d; border-color: rgba(255,217,61,0.2); }
+  .pill-meditation { background: rgba(46,204,113,0.15); color: #2ecc71; border-color: rgba(46,204,113,0.2); }
+  .pill-reading { background: rgba(255,107,107,0.15); color: #ff6b6b; border-color: rgba(255,107,107,0.2); }
+
+  .pill-remove {
+    opacity: 0.5;
+    font-size: 14px;
+    line-height: 1;
+    transition: opacity 0.2s;
+  }
+
+  .category-pill:hover .pill-remove { opacity: 1; }
+
+  /* Activity cards in categories */
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: var(--surface2);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .activity-item:hover {
+    border-color: rgba(124,111,255,0.3);
+    background: rgba(124,111,255,0.05);
+  }
+
+  .activity-item:last-child { margin-bottom: 0; }
+
+  .activity-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .activity-info { flex: 1; }
+  .activity-info h4 { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .activity-info p { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  .activity-xp {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent4);
+    font-weight: 500;
+    background: rgba(255,217,61,0.1);
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .activity-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,111,255,0.1); }
+  .icon-btn.delete:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,71,87,0.1); }
+
+  /* Data management */
+  .data-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--surface2);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+
+  .data-row:last-child { margin-bottom: 0; }
+
+  .data-row-info h3 { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .data-row-info p { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  .data-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .btn-export {
+    background: rgba(78,205,196,0.1);
+    color: var(--accent3);
+    border-color: rgba(78,205,196,0.2);
+  }
+  .btn-export:hover {
+    background: rgba(78,205,196,0.2);
+    box-shadow: 0 0 16px rgba(78,205,196,0.2);
+  }
+
+  .btn-import {
+    background: rgba(124,111,255,0.1);
+    color: var(--accent);
+    border-color: rgba(124,111,255,0.2);
+  }
+  .btn-import:hover {
+    background: rgba(124,111,255,0.2);
+    box-shadow: 0 0 16px rgba(124,111,255,0.2);
+  }
+
+  .btn-generate {
+    background: rgba(255,217,61,0.1);
+    color: var(--accent4);
+    border-color: rgba(255,217,61,0.2);
+  }
+  .btn-generate:hover {
+    background: rgba(255,217,61,0.2);
+    box-shadow: 0 0 16px rgba(255,217,61,0.2);
+  }
+
+  .btn-danger {
+    background: rgba(255,71,87,0.1);
+    color: var(--danger);
+    border-color: rgba(255,71,87,0.2);
+  }
+  .btn-danger:hover {
+    background: rgba(255,71,87,0.2);
+    box-shadow: 0 0 16px rgba(255,71,87,0.2);
+  }
+
+  .data-row.danger-zone {
+    border-color: rgba(255,71,87,0.15);
+    background: rgba(255,71,87,0.04);
+  }
+
+  /* Notification settings */
+  .notif-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .notif-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .notif-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .notif-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .notif-info h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .notif-info p { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  .soon-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: rgba(255,217,61,0.1);
+    color: var(--accent4);
+    border: 1px solid rgba(255,217,61,0.2);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  /* Goal metas */
+  .goal-empty {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--muted);
+  }
+
+  .goal-empty .empty-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+
+  .goal-empty h3 {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: var(--text);
+    opacity: 0.5;
+  }
+
+  .goal-empty p {
+    font-size: 12px;
+    font-family: var(--mono);
+  }
+
+  /* Goal items */
+  .goal-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: var(--surface2);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .goal-bar-wrap {
+    flex: 1;
+  }
+
+  .goal-bar-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .goal-bar-header h4 { font-size: 12px; font-weight: 600; }
+  .goal-bar-header span { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  .goal-bar {
+    height: 5px;
+    background: var(--surface3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .goal-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+
+  /* Canvas section */
+  .canvas-logo {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    padding: 8px 0;
+  }
+
+  .canvas-logo a { color: var(--accent); text-decoration: none; }
+
+  .integration-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .int-btn {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .int-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,111,255,0.08); }
+
+  .int-btn.primary {
+    background: rgba(124,111,255,0.15);
+    color: var(--accent);
+    border-color: rgba(124,111,255,0.3);
+  }
+
+  .int-btn.primary:hover {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 16px rgba(124,111,255,0.4);
+  }
+
+  /* Anki threshold */
+  .threshold-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .threshold-num {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--accent);
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .threshold-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .threshold-slider {
+    width: 100%;
+    margin-top: 12px;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent) 33%, var(--surface3) 33%);
+    outline: none;
+  }
+
+  .threshold-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(124,111,255,0.5);
+  }
+
+  /* Appearance theme */
+  .theme-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .theme-opt {
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .theme-opt.selected {
+    border-color: var(--accent);
+    background: rgba(124,111,255,0.08);
+  }
+
+  .theme-preview {
+    height: 40px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+
+  .dark-preview { background: linear-gradient(135deg, #0a0a0f, #1e1e28); }
+  .light-preview { background: linear-gradient(135deg, #f8f8ff, #e8e8f0); }
+  .midnight-preview { background: linear-gradient(135deg, #060612, #0d0d25); }
+
+  .theme-opt-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    font-family: var(--mono);
+  }
+
+  /* Calendar color legend */
+  .cal-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .cal-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .cal-item:hover { border-color: rgba(255,255,255,0.15); }
+
+  .cal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .cal-item-label { font-size: 11px; font-family: var(--mono); }
+
+  /* Stats mini */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-mini {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .stat-mini .val {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-mini .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* About card */
+  .about-info {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .about-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    box-shadow: 0 0 24px rgba(124,111,255,0.35);
+  }
+
+  .about-text h3 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  .about-text .ver {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .about-text p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .about-links {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .about-link {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .about-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Divider */
+  .section-divider {
+    grid-column: span 2;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0;
+  }
+
+  .section-divider span {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: 1fr; }
+    .grid-3 { grid-column: span 1; grid-template-columns: 1fr; }
+    .section-divider { grid-column: span 1; }
+    .page-title h1 { font-size: 30px; }
+    .theme-options { grid-template-columns: 1fr 1fr; }
+    .cal-legend { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">GRINDSET</span>
+    </div>
+    <div class="header-meta">
+      <span class="version-badge">v1.0.0</span>
+      <button class="save-btn">↑ Salvar alterações</button>
+    </div>
+  </header>
+
+  <!-- Title -->
+  <div class="page-title">
+    <h1>Con<span>figurações</span></h1>
+    <p>// board gamificado para tracking de produtividade</p>
+  </div>
+
+  <!-- Main grid -->
+  <div class="grid">
+
+    <!-- ── Aparência ── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon icon-purple">🎨</div>
+          <h2>Aparência</h2>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Tema</div>
+        <div class="theme-options">
+          <div class="theme-opt selected" onclick="selectTheme(this)">
+            <div class="theme-preview dark-preview"></div>
+            <div class="theme-opt-name">Dark</div>
+          </div>
+          <div class="theme-opt" onclick="selectTheme(this)">
+            <div class="theme-preview light-preview"></div>
+            <div class="theme-opt-name">Light</div>
+          </div>
+          <div class="theme-opt" onclick="selectTheme(this)">
+            <div class="theme-preview midnight-preview"></div>
+            <div class="theme-opt-name">Midnight</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="color-section">
+        <div class="color-section-label">Cor de destaque</div>
+        <div class="color-row">
+          <div class="swatch selected" style="background:#7c6fff" onclick="selectSwatch(this)"></div>
+          <div class="swatch" style="background:#4ecdc4" onclick="selectSwatch(this)"></div>
+          <div class="swatch" style="background:#ff6b6b" onclick="selectSwatch(this)"></div>
+          <div class="swatch" style="background:#ffd93d" onclick="selectSwatch(this)"></div>
+          <div class="swatch" style="background:#2ecc71" onclick="selectSwatch(this)"></div>
+          <div class="swatch" style="background:#f8b500" onclick="selectSwatch(this)"></div>
+          <div class="swatch" style="background:#ff4fa3" onclick="selectSwatch(this)"></div>
+          <div class="swatch" style="background:#00d4ff" onclick="selectSwatch(this)"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Cores do Calendário</div>
+        <div class="cal-legend">
+          <div class="cal-item"><div class="cal-dot" style="background:#7c6fff"></div><span class="cal-item-label">Daily Quest</span></div>
+          <div class="cal-item"><div class="cal-dot" style="background:#4ecdc4"></div><span class="cal-item-label">Main Quest</span></div>
+          <div class="cal-item"><div class="cal-dot" style="background:#ffd93d"></div><span class="cal-item-label">Side Quest</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Metas de Atividade ── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon icon-yellow">🎯</div>
+          <h2>Metas de Atividade</h2>
+        </div>
+        <button class="card-action-btn" onclick="addGoal()">+ Nova Meta</button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-mini">
+          <div class="val" style="color:var(--accent)">12</div>
+          <div class="lbl">XP hoje</div>
+        </div>
+        <div class="stat-mini">
+          <div class="val" style="color:var(--accent3)">3</div>
+          <div class="lbl">Metas ativas</div>
+        </div>
+        <div class="stat-mini">
+          <div class="val" style="color:var(--accent4)">87%</div>
+          <div class="lbl">Consistência</div>
+        </div>
+      </div>
+
+      <div id="goals-container">
+        <div class="goal-item">
+          <div style="font-size:20px">📖</div>
+          <div class="goal-bar-wrap">
+            <div class="goal-bar-header">
+              <h4>Leitura</h4>
+              <span>45 / 60 min</span>
+            </div>
+            <div class="goal-bar"><div class="goal-bar-fill" style="width:75%;background:linear-gradient(90deg,var(--accent),#a78bfa)"></div></div>
+          </div>
+        </div>
+        <div class="goal-item">
+          <div style="font-size:20px">🧘</div>
+          <div class="goal-bar-wrap">
+            <div class="goal-bar-header">
+              <h4>Meditação</h4>
+              <span>10 / 20 min</span>
+            </div>
+            <div class="goal-bar"><div class="goal-bar-fill" style="width:50%;background:linear-gradient(90deg,var(--accent3),#2ecc71)"></div></div>
+          </div>
+        </div>
+        <div class="goal-item">
+          <div style="font-size:20px">💻</div>
+          <div class="goal-bar-wrap">
+            <div class="goal-bar-header">
+              <h4>Código</h4>
+              <span>120 / 90 min</span>
+            </div>
+            <div class="goal-bar"><div class="goal-bar-fill" style="width:100%;background:linear-gradient(90deg,var(--accent4),#ff9500)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:16px;line-height:1.5">
+        Configure mínimos aceitáveis para suas atividades. Não cumprir as metas resulta em debuffs temporários.
+      </p>
+    </div>
+
+    <div class="section-divider"><span>Categorias & Atividades</span></div>
+
+    <!-- ── Categorias ── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon icon-teal">🏷️</div>
+          <h2>Categorias</h2>
+        </div>
+        <button class="card-action-btn">+ Nova</button>
+      </div>
+
+      <div class="field-label" style="margin-bottom:10px"><span class="dot"></span>Categorias padrão</div>
+      <div class="category-list">
+        <div class="category-pill pill-study">Estudo <span class="pill-remove">×</span></div>
+        <div class="category-pill pill-academy">Academia <span class="pill-remove">×</span></div>
+        <div class="category-pill pill-work">Trabalho <span class="pill-remove">×</span></div>
+        <div class="category-pill pill-meditation">Meditação <span class="pill-remove">×</span></div>
+        <div class="category-pill pill-reading">Leitura <span class="pill-remove">×</span></div>
+      </div>
+
+      <div class="field-label" style="margin-bottom:10px"><span class="dot"></span>Atividades</div>
+
+      <div class="activity-item">
+        <div class="activity-avatar" style="background:rgba(124,111,255,0.15)">🌅</div>
+        <div class="activity-info">
+          <h4>aura</h4>
+          <p>10 XP · 1.5/min · 5 gold</p>
+        </div>
+        <div class="activity-xp">+10 XP</div>
+        <div class="activity-actions">
+          <div class="icon-btn">✏️</div>
+          <div class="icon-btn delete">🗑</div>
+        </div>
+      </div>
+
+      <div class="activity-item">
+        <div class="activity-avatar" style="background:rgba(255,217,61,0.15)">🏠</div>
+        <div class="activity-info">
+          <h4>Organização</h4>
+          <p>5 XP · 1.5/min · 5 gold</p>
+        </div>
+        <div class="activity-xp">+5 XP</div>
+        <div class="activity-actions">
+          <div class="icon-btn">✏️</div>
+          <div class="icon-btn delete">🗑</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Notificações ── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon icon-orange">🔔</div>
+          <h2>Notificações</h2>
+        </div>
+      </div>
+
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-dot" style="background:var(--accent)"></div>
+          <div class="notif-info">
+            <h4>Lembretes Diários</h4>
+            <p>Receba lembretes para completar quests</p>
+          </div>
+        </div>
+        <span class="soon-badge">EM BREVE</span>
+      </div>
+
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-dot" style="background:var(--accent3)"></div>
+          <div class="notif-info">
+            <h4>Debuff Alert</h4>
+            <p>Aviso antes de perder streak</p>
+          </div>
+        </div>
+        <span class="soon-badge">EM BREVE</span>
+      </div>
+
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-dot" style="background:var(--accent4)"></div>
+          <div class="notif-info">
+            <h4>Level Up</h4>
+            <p>Notificação de conquistas e XP</p>
+          </div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-dot" style="background:var(--accent2)"></div>
+          <div class="notif-info">
+            <h4>Resumo Semanal</h4>
+            <p>Relatório de desempenho toda segunda</p>
+          </div>
+        </div>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+      <div class="notif-item">
+        <div class="notif-left">
+          <div class="notif-dot" style="background:var(--success)"></div>
+          <div class="notif-info">
+            <h4>Anki Revisão Pendente</h4>
+            <p>Lembrete quando cards aguardam</p>
+          </div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+    </div>
+
+    <div class="section-divider"><span>Integrações</span></div>
+
+    <!-- ── Anki ── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon icon-green">🃏</div>
+          <h2>Integração Anki</h2>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <h3>Habilitar Anki</h3>
+          <p>Sincronizar com AnkiConnect (porta 8765)</p>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <h3>Quest Automática</h3>
+          <p>Criar quest diária "Revisar Anki" automaticamente</p>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+      <div class="field" style="margin-top:16px">
+        <div class="field-label"><span class="dot"></span>Threshold de cards para completar quest</div>
+        <div class="threshold-control">
+          <div class="threshold-num" id="threshold-val">20</div>
+          <div class="threshold-label">cards/dia</div>
+        </div>
+        <input type="range" class="threshold-slider" min="5" max="100" value="20"
+          oninput="document.getElementById('threshold-val').textContent = this.value;
+                   this.style.background = `linear-gradient(90deg, var(--accent) ${(this.value-5)/95*100}%, var(--surface3) ${(this.value-5)/95*100}%)`">
+      </div>
+
+      <div class="integration-actions">
+        <button class="int-btn primary">⚡ Testar Conexão</button>
+        <button class="int-btn">🗑 Limpar Cache</button>
+      </div>
+    </div>
+
+    <!-- ── Canvas ── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon icon-teal">🎓</div>
+          <h2>Integração Canvas</h2>
+        </div>
+      </div>
+
+      <div class="toggle-row" style="margin-bottom:16px">
+        <div class="toggle-info">
+          <h3>Habilitar Canvas</h3>
+          <p>Sincronizar matérias e provas do Canvas LMS</p>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>URL da Instituição</div>
+        <input type="url" value="https://pucminas.instructure.com/">
+        <div class="canvas-logo">Configure também: <a href="#">CANVAS_URL</a> no arquivo .env.local</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Token de Acesso</div>
+        <input type="password" value="••••••••••••••••••••••••••••••••••••••••••••">
+        <div class="canvas-logo">Canvas → Conta → Configurações → Tokens de Acesso → Gerar Token</div>
+      </div>
+
+      <div class="integration-actions">
+        <button class="int-btn primary">⚡ Testar</button>
+        <button class="int-btn">📚 Escolher Matérias</button>
+        <button class="int-btn">↻ Sync Notas</button>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>Dados & Sistema</span></div>
+
+    <!-- ── Gerenciamento de Dados ── -->
+    <div class="card" style="grid-column: span 2">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="card-icon icon-red">💾</div>
+          <h2>Gerenciamento de Dados</h2>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="data-row">
+          <div class="data-row-info">
+            <h3>Exportar Dados</h3>
+            <p>Backup de todos os seus dados</p>
+          </div>
+          <button class="data-btn btn-export">↓ Exportar</button>
+        </div>
+
+        <div class="data-row">
+          <div class="data-row-info">
+            <h3>Importar Dados</h3>
+            <p>Restaure de um backup</p>
+          </div>
+          <button class="data-btn btn-import">↑ Importar</button>
+        </div>
+
+        <div class="data-row">
+          <div class="data-row-info">
+            <h3>Relatório + IA</h3>
+            <p>Últimos 7 dias com prompt de análise</p>
+          </div>
+          <button class="data-btn btn-generate">✦ Gerar</button>
+        </div>
+
+        <div class="data-row">
+          <div class="data-row-info">
+            <h3>Sincronizar Cloud</h3>
+            <p>Backup automático na nuvem</p>
+          </div>
+          <button class="data-btn btn-export">☁ Sync</button>
+        </div>
+
+        <div class="data-row danger-zone">
+          <div class="data-row-info">
+            <h3>Resetar Personagem</h3>
+            <p>Volta ao nível 1, mantém atividades e quests</p>
+          </div>
+          <button class="data-btn btn-danger">↺ Resetar</button>
+        </div>
+
+        <div class="data-row danger-zone">
+          <div class="data-row-info">
+            <h3>Resetar Tudo</h3>
+            <p>Apaga todos os dados permanentemente</p>
+          </div>
+          <button class="data-btn btn-danger">💀 Deletar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── About ── -->
+    <div class="card" style="grid-column: span 2">
+      <div class="about-info">
+        <div class="about-icon">⚡</div>
+        <div class="about-text">
+          <h3>GRINDSET</h3>
+          <div class="ver">v1.0.0 — Board gamificado para tracking de produtividade</div>
+          <p>Transforme sua rotina em RPG. Complete quests, ganhe XP e evolua seu personagem enquanto constrói hábitos poderosos. Criado para quem leva o crescimento a sério.</p>
+        </div>
+      </div>
+      <div class="about-links">
+        <a href="#" class="about-link">📄 Documentação</a>
+        <a href="#" class="about-link">🐛 Reportar Bug</a>
+        <a href="#" class="about-link">✨ Changelog</a>
+        <a href="#" class="about-link">⭐ GitHub</a>
+        <a href="#" class="about-link">📜 Licença</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function selectSwatch(el) {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    const color = el.style.background;
+    document.querySelectorAll('.field-label .dot').forEach(d => d.style.background = color);
+  }
+
+  function selectTheme(el) {
+    document.querySelectorAll('.theme-opt').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function addGoal() {
+    const container = document.getElementById('goals-container');
+    const icons = ['🎵','🏃','📝','🔬','🗣️','🎮'];
+    const colors = ['#7c6fff','#4ecdc4','#ffd93d','#ff6b6b','#2ecc71'];
+    const ic = icons[Math.floor(Math.random()*icons.length)];
+    const col = colors[Math.floor(Math.random()*colors.length)];
+    const pct = Math.floor(Math.random()*80)+10;
+    const div = document.createElement('div');
+    div.className = 'goal-item';
+    div.style.animation = 'fadeUp 0.3s ease both';
+    div.innerHTML = `
+      <div style="font-size:20px">${ic}</div>
+      <div class="goal-bar-wrap">
+        <div class="goal-bar-header">
+          <h4>Nova Meta</h4>
+          <span>${pct} / 100 min</span>
+        </div>
+        <div class="goal-bar"><div class="goal-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${col},${col}99)"></div></div>
+      </div>
+    `;
+    container.appendChild(div);
+  }
+</script>
+
+</body>
+</html>

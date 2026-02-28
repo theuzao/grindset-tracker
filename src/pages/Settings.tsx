@@ -1,19 +1,13 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import type { ActivityConfig, CustomAttributeImpact } from '@/types';
 import {
-  Settings as SettingsIcon,
   Download,
   Upload,
   Trash2,
-  Database,
-  Palette,
-  Bell,
-  Target,
   Plus,
   Edit3,
   Zap,
   AlertTriangle,
-  Layers,
   X,
   User,
   FileText,
@@ -21,11 +15,8 @@ import {
   Square,
   RefreshCw,
 } from 'lucide-react';
-import { Header } from '@/components/layout/Header';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
-import { Badge } from '@/components/ui/Badge';
 import { ActivityIcon, ACTIVITY_ICON_NAMES, ACTIVITY_ICON_LABELS } from '@/components/ui/ActivityIcon';
 import { db, exportAllData, exportFullReport, importAllData, resetDatabase } from '@/database/db';
 import { getAnkiConfig, setAnkiConfig, updateAutoQuestConfig } from '@/features/anki/ankiConfig';
@@ -47,6 +38,157 @@ import {
 } from '@/utils/theme';
 import type { ActivityCategory, ActivityGoal, CustomActivityCategory, AttributeType } from '@/types';
 
+// ─── Shared card class ────────────────────────────────────────────────────────
+const CARD = 'bg-[#111118] border border-white/[0.07] rounded-2xl p-7 relative overflow-hidden hover:border-white/[0.13] transition-colors';
+
+// ─── Top gradient accent line for each card ───────────────────────────────────
+function CardGlow({ color = 'rgba(124,111,255,0.3)' }: { color?: string }) {
+  return (
+    <div
+      className="absolute top-0 left-0 right-0 h-px"
+      style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+    />
+  );
+}
+
+// ─── Card icon container ──────────────────────────────────────────────────────
+function CardIcon({ emoji, bg }: { emoji: string; bg: string }) {
+  return (
+    <div
+      className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
+      style={{ background: bg }}
+    >
+      {emoji}
+    </div>
+  );
+}
+
+// ─── Field label with accent dot ─────────────────────────────────────────────
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-1.5 mb-2">
+      <span className="w-[5px] h-[5px] rounded-full bg-accent inline-block shrink-0" />
+      <span className="font-mono text-[11px] text-gray-500 tracking-[0.08em] uppercase">{children}</span>
+    </div>
+  );
+}
+
+// ─── Card action button (header area) ────────────────────────────────────────
+function CardActionBtn({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="bg-[#1e1e28] border border-white/[0.07] text-gray-200 px-3.5 py-1.5 rounded-lg text-xs font-bold tracking-[0.04em] flex items-center gap-1.5 hover:bg-accent/15 hover:border-accent hover:text-accent transition-all"
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─── Toggle switch ────────────────────────────────────────────────────────────
+function ToggleSwitch({ value, onChange }: { value: boolean; onChange: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onChange}
+      className={`w-11 h-6 rounded-xl relative cursor-pointer border transition-all shrink-0 ${
+        value
+          ? 'bg-accent border-accent shadow-[0_0_12px_rgba(124,111,255,0.4)]'
+          : 'bg-[#1e1e28] border-white/[0.07]'
+      }`}
+    >
+      <div
+        className={`w-4 h-4 bg-white rounded-full absolute top-[3px] transition-transform ${
+          value ? 'translate-x-[25px]' : 'translate-x-[3px]'
+        }`}
+      />
+    </button>
+  );
+}
+
+// ─── Icon action button (edit / delete in lists) ──────────────────────────────
+function IconBtn({
+  onClick,
+  danger,
+  title,
+  children,
+}: {
+  onClick: () => void;
+  danger?: boolean;
+  title?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      className={`w-7 h-7 bg-[#1e1e28] border border-white/[0.07] rounded-[7px] flex items-center justify-center text-gray-500 transition-all ${
+        danger
+          ? 'hover:border-red-500 hover:text-red-400 hover:bg-red-500/10'
+          : 'hover:border-accent hover:text-accent hover:bg-accent/10'
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─── Section divider ──────────────────────────────────────────────────────────
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="xl:col-span-2 flex items-center gap-4 my-1">
+      <div className="flex-1 h-px bg-white/[0.07]" />
+      <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-gray-600 whitespace-nowrap">
+        {label}
+      </span>
+      <div className="flex-1 h-px bg-white/[0.07]" />
+    </div>
+  );
+}
+
+// ─── "Em breve" badge ─────────────────────────────────────────────────────────
+function SoonBadge() {
+  return (
+    <span className="font-mono text-[10px] px-2 py-0.5 rounded-xl bg-yellow-400/10 text-yellow-400 border border-yellow-400/20 tracking-[0.05em] shrink-0">
+      EM BREVE
+    </span>
+  );
+}
+
+// ─── Data action button ───────────────────────────────────────────────────────
+function DataBtn({
+  onClick,
+  disabled,
+  variant,
+  children,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  variant: 'export' | 'import' | 'generate' | 'danger';
+  children: React.ReactNode;
+}) {
+  const styles = {
+    export: 'bg-[rgba(78,205,196,0.1)] text-[#4ecdc4] border-[rgba(78,205,196,0.2)] hover:bg-[rgba(78,205,196,0.2)]',
+    import: 'bg-accent/10 text-accent border-accent/20 hover:bg-accent/20',
+    generate: 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20 hover:bg-yellow-400/20',
+    danger: 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20',
+  };
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold border transition-all tracking-[0.04em] whitespace-nowrap disabled:opacity-50 ${styles[variant]}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─── Main Settings component ──────────────────────────────────────────────────
+
 export function Settings() {
   const activityGoals = useActivityGoals(false);
   const activeDebuffs = useActiveDebuffs();
@@ -59,7 +201,6 @@ export function Settings() {
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Carregar todas as configs (padrão + customizadas)
   useEffect(() => {
     categoryRepository.getAllActivityConfigs().then(setAllConfigs);
   }, [customCategories]);
@@ -91,7 +232,6 @@ export function Settings() {
         xpEvents: unknown[];
       };
 
-      // Criar arquivo JSON com dados completos
       const jsonBlob = new Blob([JSON.stringify(report.rawData, null, 2)], { type: 'application/json' });
       const jsonUrl = URL.createObjectURL(jsonBlob);
       const jsonLink = document.createElement('a');
@@ -100,7 +240,6 @@ export function Settings() {
       jsonLink.click();
       URL.revokeObjectURL(jsonUrl);
 
-      // Criar arquivo de resumo e prompt de IA (Markdown)
       const markdownContent = `# Relatório GRINDSET - ${date}
 
 ## Resumo dos Últimos 7 Dias
@@ -141,8 +280,6 @@ ${report.aiAnalysisPrompt}
       const mdLink = document.createElement('a');
       mdLink.href = mdUrl;
       mdLink.download = `grindset-relatorio-ia-${date}.md`;
-
-      // Pequeno delay para garantir que o primeiro download comece
       setTimeout(() => {
         mdLink.click();
         URL.revokeObjectURL(mdUrl);
@@ -155,48 +292,32 @@ ${report.aiAnalysisPrompt}
     }
   };
 
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
+  const handleImportClick = () => fileInputRef.current?.click();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.name.endsWith('.json')) {
       alert('Por favor, selecione um arquivo JSON válido');
       return;
     }
-
-    const confirmImport = window.confirm(
-      'Importar dados irá SUBSTITUIR os dados existentes com os mesmos IDs. Deseja continuar?'
-    );
-
-    if (!confirmImport) {
+    if (!window.confirm('Importar dados irá SUBSTITUIR os dados existentes com os mesmos IDs. Deseja continuar?')) {
       e.target.value = '';
       return;
     }
-
     setIsImporting(true);
-
     try {
       const text = await file.text();
       const data = JSON.parse(text);
-
-      // Validação básica da estrutura
       const validKeys = [
         'character', 'activities', 'quests', 'objectives', 'reflections',
         'weeklyReports', 'achievements', 'xpEvents', 'dailySnapshots',
-        'aiInsights', 'activityGoals', 'goalProgress', 'debuffs', 'customCategories'
+        'aiInsights', 'activityGoals', 'goalProgress', 'debuffs', 'customCategories',
       ];
-
-      const hasValidKeys = Object.keys(data).some(key => validKeys.includes(key));
-      if (!hasValidKeys) {
+      if (!Object.keys(data).some(key => validKeys.includes(key))) {
         throw new Error('Arquivo de backup inválido: estrutura não reconhecida');
       }
-
       await importAllData(data);
-
       alert('Dados importados com sucesso! A página será recarregada.');
       window.location.reload();
     } catch (error) {
@@ -225,44 +346,18 @@ ${report.aiAnalysisPrompt}
   const handleResetCharacter = async () => {
     if (window.confirm('Resetar personagem? Você voltará ao nível 1 e perderá todo XP, Gold e atributos. Seu nome será mantido.')) {
       try {
-        // Get current character to preserve name
         const character = await db.character.toCollection().first();
-        if (!character) {
-          alert('Personagem não encontrado');
-          return;
-        }
-
-        // Reset character to initial values while preserving name
+        if (!character) { alert('Personagem não encontrado'); return; }
         const now = new Date().toISOString();
         const initialAttributes: Record<AttributeType, { type: AttributeType; name: string; icon: string; color: string; currentValue: number; baseValue: number }> = {} as any;
-
         for (const [key, attr] of Object.entries(INITIAL_ATTRIBUTES)) {
-          initialAttributes[key as AttributeType] = {
-            type: key as AttributeType,
-            name: attr.name,
-            icon: attr.icon,
-            color: attr.color,
-            currentValue: 0,
-            baseValue: 0,
-          };
+          initialAttributes[key as AttributeType] = { type: key as AttributeType, name: attr.name, icon: attr.icon, color: attr.color, currentValue: 0, baseValue: 0 };
         }
-
         await db.character.update(character.id, {
-          level: 1,
-          currentXP: 0,
-          totalXP: 0,
-          gold: 0,
-          pendingPenalty: 0,
-          title: 'Iniciante',
-          attributes: initialAttributes,
-          streak: {
-            current: 0,
-            longest: 0,
-            lastActiveDate: now,
-          },
-          updatedAt: now,
+          level: 1, currentXP: 0, totalXP: 0, gold: 0, pendingPenalty: 0,
+          title: 'Iniciante', attributes: initialAttributes,
+          streak: { current: 0, longest: 0, lastActiveDate: now }, updatedAt: now,
         });
-
         await db.xpEvents.clear();
         await db.debuffs.clear();
         window.location.reload();
@@ -273,397 +368,353 @@ ${report.aiAnalysisPrompt}
     }
   };
 
-  const handleEditGoal = (goal: ActivityGoal) => {
-    setEditingGoal(goal);
-    setShowGoalModal(true);
-  };
-
+  const handleEditGoal = (goal: ActivityGoal) => { setEditingGoal(goal); setShowGoalModal(true); };
   const handleDeleteGoal = async (goalId: string) => {
-    if (window.confirm('Remover esta meta?')) {
-      await goalRepository.delete(goalId);
-    }
+    if (window.confirm('Remover esta meta?')) await goalRepository.delete(goalId);
   };
-
-  const handleToggleGoal = async (goalId: string) => {
-    await goalRepository.toggleActive(goalId);
-  };
-
-  const handleEditCategory = (category: CustomActivityCategory) => {
-    setEditingCategory(category);
-    setShowCategoryModal(true);
-  };
-
+  const handleToggleGoal = async (goalId: string) => goalRepository.toggleActive(goalId);
+  const handleEditCategory = (category: CustomActivityCategory) => { setEditingCategory(category); setShowCategoryModal(true); };
   const handleDeleteCategory = async (categoryId: string) => {
-    if (window.confirm('Remover esta categoria?')) {
-      await categoryRepository.delete(categoryId);
-    }
+    if (window.confirm('Remover esta categoria?')) await categoryRepository.delete(categoryId);
   };
-
-  const handleToggleCategory = async (categoryId: string) => {
-    await categoryRepository.toggleActive(categoryId);
-  };
+  const handleToggleCategory = async (categoryId: string) => categoryRepository.toggleActive(categoryId);
 
   return (
     <div className="min-h-screen">
-      <Header
-        title="Configuracoes"
-        subtitle="Personalize sua experiencia"
-      />
+      {/* Page Title */}
+      <div className="px-6 pt-6 pb-2 max-w-6xl mx-auto">
+        <div className="mb-10">
+          <h1 className="text-[38px] font-extrabold tracking-tight leading-none mb-2">
+            Con<span className="bg-gradient-to-r from-accent to-[#4ecdc4] bg-clip-text text-transparent">figurações</span>
+          </h1>
+          <p className="text-sm text-gray-500 font-mono tracking-[0.05em]">// personalize sua experiência</p>
+        </div>
+      </div>
 
-      <div className="p-6 space-y-6 max-w-6xl">
+      <div className="px-6 pb-12 max-w-6xl mx-auto">
+
         {/* Active Debuffs Warning */}
         {activeDebuffs && activeDebuffs.length > 0 && (
-          <Card className="border-red-500/30 bg-red-500/5">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-400">
-                <AlertTriangle size={20} />
-                Debuffs Ativos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {activeDebuffs.map((debuff) => {
-                  const remainingMs = new Date(debuff.expiresAt).getTime() - Date.now();
-                  const remainingHours = Math.floor(remainingMs / (1000 * 60 * 60));
-                  const remainingMinutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-
-                  return (
-                    <div key={debuff.id} className="flex items-center justify-between p-3 bg-red-500/10 rounded-lg">
-                      <div>
-                        <p className="font-medium text-red-400">{debuff.name}</p>
-                        <p className="text-xs text-red-400/70">{debuff.description}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold text-red-400">
-                          -{Math.round((1 - debuff.multiplier) * 100)}%
-                        </p>
-                        <p className="text-xs text-red-400/70">
-                          {remainingHours > 0 ? `${remainingHours}h ${remainingMinutes}m` : `${remainingMinutes}m`}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
+          <div className="bg-[#111118] border border-red-500/20 rounded-2xl p-7 mb-5 relative overflow-hidden">
+            <CardGlow color="rgba(255,71,87,0.3)" />
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-red-500/15 shrink-0">
+                <AlertTriangle size={15} className="text-red-400" />
               </div>
-            </CardContent>
-          </Card>
+              <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase text-red-400">Debuffs Ativos</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {activeDebuffs.map((debuff) => {
+                const remainingMs = new Date(debuff.expiresAt).getTime() - Date.now();
+                const remainingHours = Math.floor(remainingMs / (1000 * 60 * 60));
+                const remainingMinutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+                return (
+                  <div key={debuff.id} className="flex items-center justify-between p-3 bg-red-500/10 rounded-xl border border-red-500/20">
+                    <div>
+                      <p className="font-semibold text-red-400 text-sm">{debuff.name}</p>
+                      <p className="text-xs text-red-400/70 font-mono">{debuff.description}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-red-400">-{Math.round((1 - debuff.multiplier) * 100)}%</p>
+                      <p className="text-xs text-red-400/70 font-mono">
+                        {remainingHours > 0 ? `${remainingHours}h ${remainingMinutes}m` : `${remainingMinutes}m`}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         )}
 
-        {/* Row 1: Goals + Appearance */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
 
-        {/* Activity Goals */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target size={20} className="text-accent" />
-              Metas de Atividade
-            </CardTitle>
-            <Button size="sm" onClick={() => { setEditingGoal(null); setShowGoalModal(true); }}>
-              <Plus size={16} className="mr-1" />
-              Nova Meta
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-400 mb-4">
-              Configure minimos aceitaveis para suas atividades. Nao cumprir as metas resulta em debuffs temporarios.
+          {/* ── Aparência ── */}
+          <div className={CARD}>
+            <CardGlow />
+            <div className="flex items-center gap-2.5 mb-6">
+              <CardIcon emoji="🎨" bg="rgba(124,111,255,0.15)" />
+              <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase">Aparência</h2>
+            </div>
+            {/* Tema */}
+            <div className="mb-5">
+              <FieldLabel>Tema</FieldLabel>
+              <div className="flex items-center justify-between px-4 py-3 bg-[#18181f] rounded-xl border border-white/[0.07]">
+                <span className="text-sm font-semibold">Dark</span>
+                <SoonBadge />
+              </div>
+            </div>
+            <AccentColorPicker />
+            <QuestColorsPicker />
+          </div>
+
+          {/* ── Metas de Atividade ── */}
+          <div className={CARD}>
+            <CardGlow color="rgba(255,217,61,0.3)" />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2.5">
+                <CardIcon emoji="🎯" bg="rgba(255,217,61,0.15)" />
+                <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase">Metas de Atividade</h2>
+              </div>
+              <CardActionBtn onClick={() => { setEditingGoal(null); setShowGoalModal(true); }}>
+                <Plus size={13} /> Nova Meta
+              </CardActionBtn>
+            </div>
+            <p className="text-[11px] text-gray-500 font-mono mb-4 leading-relaxed">
+              Configure mínimos aceitáveis para suas atividades. Não cumprir resulta em debuffs temporários.
             </p>
-
             {activityGoals && activityGoals.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {activityGoals.map((goal) => {
                   const config = allConfigs[goal.category] || { name: goal.category, color: '#6366F1', icon: '📌' };
                   return (
                     <div
                       key={goal.id}
-                      className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-                        goal.isActive
-                          ? 'bg-bg-tertiary border-border'
-                          : 'bg-bg-tertiary/50 border-border/50 opacity-60'
-                      }`}
+                      className={`flex items-center gap-3.5 p-3.5 bg-[#18181f] rounded-xl border border-white/[0.07] hover:border-accent/30 hover:bg-accent/[0.03] transition-all ${!goal.isActive ? 'opacity-50' : ''}`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: `${config.color}20`, color: config.color }}
-                        >
-                          {config.icon && !['BookOpen', 'Dumbbell', 'Briefcase', 'Brain', 'Book'].includes(config.icon)
-                            ? <span className="text-lg">{config.icon}</span>
-                            : <Zap size={20} />
-                          }
-                        </div>
-                        <div>
-                          <p className="font-medium text-white">{config.name}</p>
-                          <p className="text-sm text-gray-400">
-                            {goal.targetDuration} min/dia em quests, {goal.targetSessions} dia(s)/semana com check-in
-                          </p>
-                        </div>
+                      <div
+                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-lg"
+                        style={{ backgroundColor: `${config.color}20` }}
+                      >
+                        {config.icon && !['BookOpen', 'Dumbbell', 'Briefcase', 'Brain', 'Book'].includes(config.icon)
+                          ? <span>{config.icon}</span>
+                          : <Zap size={18} style={{ color: config.color }} />
+                        }
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={goal.isActive ? 'accent' : 'default'}>
-                          {goal.isActive ? 'Ativa' : 'Inativa'}
-                        </Badge>
-                        <button
-                          onClick={() => handleToggleGoal(goal.id)}
-                          className="p-2 rounded-lg hover:bg-bg-hover text-gray-400 hover:text-white transition-colors"
-                          title={goal.isActive ? 'Desativar' : 'Ativar'}
-                        >
-                          {goal.isActive ? '⏸' : '▶'}
-                        </button>
-                        <button
-                          onClick={() => handleEditGoal(goal)}
-                          className="p-2 rounded-lg hover:bg-bg-hover text-gray-400 hover:text-white transition-colors"
-                        >
-                          <Edit3 size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteGoal(goal.id)}
-                          className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[13px] font-semibold mb-0.5">{config.name}</h4>
+                        <p className="text-[11px] text-gray-500 font-mono truncate">
+                          {goal.targetDuration} min/dia · {goal.targetSessions} dia(s)/semana
+                        </p>
+                      </div>
+                      <div className="flex gap-1.5 shrink-0">
+                        <IconBtn onClick={() => handleToggleGoal(goal.id)} title={goal.isActive ? 'Desativar' : 'Ativar'}>
+                          <span className="text-sm">{goal.isActive ? '⏸' : '▶'}</span>
+                        </IconBtn>
+                        <IconBtn onClick={() => handleEditGoal(goal)}>
+                          <Edit3 size={12} />
+                        </IconBtn>
+                        <IconBtn onClick={() => handleDeleteGoal(goal.id)} danger>
+                          <Trash2 size={12} />
+                        </IconBtn>
                       </div>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                <Target size={40} className="mx-auto mb-3 opacity-50" />
-                <p>Nenhuma meta configurada</p>
-                <p className="text-sm">Crie metas para manter sua consistencia</p>
+              <div className="text-center py-8">
+                <div className="text-[36px] mb-3 opacity-40">🎯</div>
+                <h3 className="text-sm text-white/50 mb-1.5">Nenhuma meta configurada</h3>
+                <p className="text-[12px] font-mono text-gray-600">Crie metas para manter sua consistência</p>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
 
-          {/* Appearance — col direita do Row 1 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette size={20} className="text-accent" />
-                Aparência
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-bg-tertiary rounded-lg">
-                <div>
-                  <p className="font-medium text-white">Tema</p>
-                  <p className="text-sm text-gray-400">Dark (padrão)</p>
-                </div>
-                <span className="text-gray-500 text-sm">Em breve</span>
+          <SectionDivider label="Categorias & Atividades" />
+
+          {/* ── Categorias ── */}
+          <div className={CARD}>
+            <CardGlow color="rgba(78,205,196,0.3)" />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2.5">
+                <CardIcon emoji="🏷️" bg="rgba(78,205,196,0.15)" />
+                <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase">Categorias</h2>
               </div>
-              <AccentColorPicker />
-              <QuestColorsPicker />
-            </CardContent>
-          </Card>
-        </div>{/* fim Row 1 */}
+              <CardActionBtn onClick={() => { setEditingCategory(null); setShowCategoryModal(true); }}>
+                <Plus size={13} /> Nova
+              </CardActionBtn>
+            </div>
 
-        {/* Row 2: Categories + Data Management */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+            <FieldLabel>Categorias padrão</FieldLabel>
+            <div className="flex flex-wrap gap-2 mb-5">
+              {Object.values(ACTIVITY_CONFIGS).map((config) => (
+                <span
+                  key={config.category}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-semibold tracking-[0.04em] border"
+                  style={{ backgroundColor: `${config.color}20`, color: config.color, borderColor: `${config.color}33` }}
+                >
+                  {config.name}
+                </span>
+              ))}
+            </div>
 
-          {/* Custom Categories */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Layers size={20} className="text-accent" />
-                Categorias de Atividade
-              </CardTitle>
-              <Button size="sm" onClick={() => { setEditingCategory(null); setShowCategoryModal(true); }}>
-                <Plus size={16} className="mr-1" />
-                Nova Categoria
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-400 mb-4">
-                Crie categorias personalizadas além das padrões (Estudo, Academia, etc).
-              </p>
-              <div className="mb-4 p-3 bg-bg-tertiary/50 rounded-lg border border-border/50">
-                <p className="text-xs text-gray-500 mb-2">Categorias padrão:</p>
-                <div className="flex flex-wrap gap-2">
-                  {Object.values(ACTIVITY_CONFIGS).map((config) => (
-                    <span
-                      key={config.category}
-                      className="px-2 py-1 rounded-md text-xs font-medium"
-                      style={{ backgroundColor: `${config.color}20`, color: config.color }}
-                    >
-                      {config.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              {customCategories && customCategories.length > 0 ? (
-                <div className="space-y-3">
+            {customCategories && customCategories.length > 0 ? (
+              <>
+                <FieldLabel>Customizadas</FieldLabel>
+                <div className="space-y-2">
                   {customCategories.map((category) => (
                     <div
                       key={category.id}
-                      className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
-                        category.isActive ? 'bg-bg-tertiary border-border' : 'bg-bg-tertiary/50 border-border/50 opacity-60'
-                      }`}
+                      className={`flex items-center gap-3.5 p-3.5 bg-[#18181f] rounded-xl border border-white/[0.07] hover:border-accent/30 transition-all ${!category.isActive ? 'opacity-50' : ''}`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                          style={{ backgroundColor: `${category.color}20`, color: category.color }}
-                        >
-                          <ActivityIcon icon={category.icon} size={20} />
-                        </div>
-                        <div>
-                          <p className="font-medium text-white text-sm">{category.name}</p>
-                          <p className="text-xs text-gray-400">
-                            {category.baseXP} XP · {category.xpPerMinute}/min · {category.goldPerSession} gold
-                          </p>
-                        </div>
+                      <div
+                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: `${category.color}20`, color: category.color }}
+                      >
+                        <ActivityIcon icon={category.icon} size={18} />
                       </div>
-                      <div className="flex items-center gap-1">
-                        <button onClick={() => handleToggleCategory(category.id)}
-                          className="p-1.5 rounded-lg hover:bg-bg-hover text-gray-400 hover:text-white transition-colors">
-                          {category.isActive ? '⏸' : '▶'}
-                        </button>
-                        <button onClick={() => handleEditCategory(category)}
-                          className="p-1.5 rounded-lg hover:bg-bg-hover text-gray-400 hover:text-white transition-colors">
-                          <Edit3 size={14} />
-                        </button>
-                        <button onClick={() => handleDeleteCategory(category.id)}
-                          className="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors">
-                          <Trash2 size={14} />
-                        </button>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[13px] font-semibold mb-0.5">{category.name}</h4>
+                        <p className="text-[11px] text-gray-500 font-mono">
+                          {category.baseXP} XP · {category.xpPerMinute}/min · {category.goldPerSession} gold
+                        </p>
+                      </div>
+                      <div className="flex gap-1.5 shrink-0">
+                        <IconBtn onClick={() => handleToggleCategory(category.id)}>
+                          <span className="text-sm">{category.isActive ? '⏸' : '▶'}</span>
+                        </IconBtn>
+                        <IconBtn onClick={() => handleEditCategory(category)}>
+                          <Edit3 size={12} />
+                        </IconBtn>
+                        <IconBtn onClick={() => handleDeleteCategory(category.id)} danger>
+                          <Trash2 size={12} />
+                        </IconBtn>
                       </div>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Layers size={36} className="mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">Nenhuma categoria customizada</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              </>
+            ) : (
+              <div className="text-center py-6">
+                <div className="text-[30px] mb-2 opacity-40">🏷️</div>
+                <p className="text-xs font-mono text-gray-600">Nenhuma categoria customizada</p>
+              </div>
+            )}
+          </div>
 
-          {/* Data Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database size={20} className="text-accent" />
-                Gerenciamento de Dados
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-bg-tertiary rounded-lg">
-                <div>
-                  <p className="font-medium text-white text-sm">Exportar Dados</p>
-                  <p className="text-xs text-gray-400">Backup de todos os seus dados</p>
+          {/* ── Notificações ── */}
+          <div className={CARD}>
+            <CardGlow color="rgba(255,107,107,0.3)" />
+            <div className="flex items-center gap-2.5 mb-6">
+              <CardIcon emoji="🔔" bg="rgba(255,107,107,0.15)" />
+              <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase">Notificações</h2>
+            </div>
+            {[
+              { color: '#7c6fff', title: 'Lembretes Diários',       desc: 'Receba lembretes para completar quests',      soon: true  },
+              { color: '#4ecdc4', title: 'Debuff Alert',             desc: 'Aviso antes de perder streak',               soon: true  },
+              { color: '#ffd93d', title: 'Level Up',                 desc: 'Notificação de conquistas e XP',             soon: false },
+              { color: '#ff6b6b', title: 'Resumo Semanal',           desc: 'Relatório de desempenho toda segunda',       soon: true  },
+              { color: '#2ecc71', title: 'Anki Revisão Pendente',    desc: 'Lembrete quando cards aguardam',             soon: true  },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between py-3.5 border-b border-white/[0.07] last:border-b-0 last:pb-0"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                  <div>
+                    <h4 className="text-[13px] font-semibold mb-0.5">{item.title}</h4>
+                    <p className="text-[11px] text-gray-500 font-mono">{item.desc}</p>
+                  </div>
                 </div>
-                <Button variant="secondary" size="sm" onClick={handleExport}>
-                  <Download size={14} className="mr-1.5" />
-                  Exportar
-                </Button>
+                {item.soon ? (
+                  <SoonBadge />
+                ) : (
+                  <div className="w-11 h-6 bg-accent rounded-xl relative border border-accent shrink-0 shadow-[0_0_12px_rgba(124,111,255,0.4)]">
+                    <div className="w-4 h-4 bg-white rounded-full absolute top-[3px] translate-x-[25px]" />
+                  </div>
+                )}
               </div>
-              <div className="flex items-center justify-between p-3 bg-accent/10 border border-accent/20 rounded-lg">
-                <div>
-                  <p className="font-medium text-white text-sm">Relatório + IA</p>
-                  <p className="text-xs text-gray-400">Últimos 7 dias com prompt de análise</p>
-                </div>
-                <Button variant="primary" size="sm" onClick={handleFullReportExport}>
-                  <FileText size={14} className="mr-1.5" />
-                  Gerar
-                </Button>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-bg-tertiary rounded-lg">
-                <div>
-                  <p className="font-medium text-white text-sm">Importar Dados</p>
-                  <p className="text-xs text-gray-400">Restaure de um backup</p>
-                </div>
-                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".json" className="hidden" />
-                <Button variant="secondary" size="sm" onClick={handleImportClick} isLoading={isImporting}>
-                  <Upload size={14} className="mr-1.5" />
-                  {isImporting ? 'Importando...' : 'Importar'}
-                </Button>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                <div>
-                  <p className="font-medium text-amber-400 text-sm">Resetar Personagem</p>
-                  <p className="text-xs text-amber-400/70">Volta ao nível 1, mantém atividades e quests</p>
-                </div>
-                <Button variant="secondary" size="sm" onClick={handleResetCharacter}>
-                  <User size={14} className="mr-1.5" />
-                  Resetar
-                </Button>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <div>
-                  <p className="font-medium text-red-400 text-sm">Resetar Tudo</p>
-                  <p className="text-xs text-red-400/70">Apague todos os dados permanentemente</p>
-                </div>
-                <Button variant="danger" size="sm" onClick={handleReset}>
-                  <Trash2 size={14} className="mr-1.5" />
-                  Resetar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            ))}
+          </div>
 
-        </div>{/* fim Row 2 */}
+          <SectionDivider label="Integrações" />
 
-        {/* Row 3: Anki + Canvas */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
           <AnkiSettingsSection />
           <CanvasSettingsSection />
-        </div>{/* fim Row 3 */}
 
-        {/* Row 4: Notifications + About */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell size={20} className="text-accent" />
-                Notificações
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between p-3 bg-bg-tertiary rounded-lg">
+          <SectionDivider label="Dados & Sistema" />
+
+          {/* ── Gerenciamento de Dados ── */}
+          <div className={`xl:col-span-2 ${CARD}`}>
+            <CardGlow color="rgba(255,71,87,0.3)" />
+            <div className="flex items-center gap-2.5 mb-6">
+              <CardIcon emoji="💾" bg="rgba(255,71,87,0.15)" />
+              <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase">Gerenciamento de Dados</h2>
+            </div>
+            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".json" className="hidden" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Exportar */}
+              <div className="flex items-center justify-between p-4 bg-[#18181f] rounded-xl border border-white/[0.07]">
                 <div>
-                  <p className="font-medium text-white text-sm">Lembretes Diários</p>
-                  <p className="text-xs text-gray-400">Receba lembretes para completar quests</p>
+                  <h3 className="text-[13px] font-semibold mb-0.5">Exportar Dados</h3>
+                  <p className="text-[11px] text-gray-500 font-mono">Backup de todos os seus dados</p>
                 </div>
-                <span className="text-gray-500 text-sm">Em breve</span>
+                <DataBtn onClick={handleExport} variant="export">
+                  <Download size={13} /> Exportar
+                </DataBtn>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <SettingsIcon size={20} className="text-accent" />
-                Sobre
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4 py-2">
-                <img src="/logo.png" alt="GRINDSET" className="w-14 h-14 rounded-xl shrink-0" />
+              {/* Importar */}
+              <div className="flex items-center justify-between p-4 bg-[#18181f] rounded-xl border border-white/[0.07]">
                 <div>
-                  <h3 className="text-lg font-bold text-white">GRINDSET</h3>
-                  <p className="text-gray-400 text-sm">v1.0.0</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Board gamificado para tracking de produtividade.
-                  </p>
+                  <h3 className="text-[13px] font-semibold mb-0.5">Importar Dados</h3>
+                  <p className="text-[11px] text-gray-500 font-mono">Restaure de um backup</p>
                 </div>
+                <DataBtn onClick={handleImportClick} disabled={isImporting} variant="import">
+                  <Upload size={13} /> {isImporting ? 'Importando...' : 'Importar'}
+                </DataBtn>
               </div>
-            </CardContent>
-          </Card>
-        </div>{/* fim Row 4 */}
+              {/* Relatório IA */}
+              <div className="flex items-center justify-between p-4 bg-[#18181f] rounded-xl border border-white/[0.07]">
+                <div>
+                  <h3 className="text-[13px] font-semibold mb-0.5">Relatório + IA</h3>
+                  <p className="text-[11px] text-gray-500 font-mono">Últimos 7 dias com prompt de análise</p>
+                </div>
+                <DataBtn onClick={handleFullReportExport} variant="generate">
+                  <FileText size={13} /> Gerar
+                </DataBtn>
+              </div>
+              {/* Resetar Personagem */}
+              <div className="flex items-center justify-between p-4 bg-[#18181f] rounded-xl border border-red-500/15 bg-red-500/[0.04]">
+                <div>
+                  <h3 className="text-[13px] font-semibold mb-0.5">Resetar Personagem</h3>
+                  <p className="text-[11px] text-gray-500 font-mono">Volta ao nível 1, mantém atividades e quests</p>
+                </div>
+                <DataBtn onClick={handleResetCharacter} variant="danger">
+                  <User size={13} /> Resetar
+                </DataBtn>
+              </div>
+              {/* Resetar Tudo */}
+              <div className="sm:col-span-2 flex items-center justify-between p-4 bg-[#18181f] rounded-xl border border-red-500/15 bg-red-500/[0.04]">
+                <div>
+                  <h3 className="text-[13px] font-semibold mb-0.5 text-red-400">Resetar Tudo</h3>
+                  <p className="text-[11px] text-gray-500 font-mono">Apaga todos os dados permanentemente</p>
+                </div>
+                <DataBtn onClick={handleReset} variant="danger">
+                  <Trash2 size={13} /> Deletar Tudo
+                </DataBtn>
+              </div>
+            </div>
+          </div>
 
+          {/* ── About ── */}
+          <div className={`xl:col-span-2 ${CARD}`}>
+            <CardGlow />
+            <div className="flex gap-4 items-start">
+              <div className="w-14 h-14 bg-gradient-to-br from-accent to-[#a78bfa] rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-[0_0_24px_rgba(124,111,255,0.35)]">
+                ⚡
+              </div>
+              <div>
+                <h3 className="text-lg font-extrabold tracking-[0.08em] mb-1">GRINDSET</h3>
+                <p className="font-mono text-[11px] text-accent mb-2">v1.0.0 — Board gamificado para tracking de produtividade</p>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Transforme sua rotina em RPG. Complete quests, ganhe XP e evolua seu personagem enquanto constrói hábitos poderosos. Criado para quem leva o crescimento a sério.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>{/* end main grid */}
       </div>
 
-      {/* Goal Modal */}
+      {/* Modals */}
       <GoalModal
         isOpen={showGoalModal}
         onClose={() => { setShowGoalModal(false); setEditingGoal(null); }}
         editingGoal={editingGoal}
       />
-
-      {/* Category Modal */}
       <CategoryModal
         isOpen={showCategoryModal}
         onClose={() => { setShowCategoryModal(false); setEditingCategory(null); }}
@@ -705,88 +756,77 @@ function AnkiSettingsSection() {
     alert('Cache do Anki limpo com sucesso!');
   };
 
+  const testLabel =
+    testStatus === 'testing' ? 'Testando...' :
+    testStatus === 'success' ? '✓ Conectado!' :
+    testStatus === 'fail'    ? '✗ Falhou'     :
+    '⚡ Testar Conexão';
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Layers size={20} className="text-accent" />
-          Integração Anki
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Toggle enabled */}
-          <div className="flex items-center justify-between p-3 bg-bg-tertiary rounded-lg">
-            <div>
-              <p className="font-medium text-white">Habilitar Anki</p>
-              <p className="text-sm text-gray-400">Sincronizar com AnkiConnect (porta 8765)</p>
-            </div>
-            <button
-              onClick={() => updateConfig({ enabled: !config.enabled })}
-              className={`w-12 h-6 rounded-full transition-colors relative ${
-                config.enabled ? 'bg-accent' : 'bg-gray-600'
-              }`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                  config.enabled ? 'translate-x-6' : 'translate-x-0.5'
-                }`}
-              />
-            </button>
-          </div>
+    <div className={CARD}>
+      <CardGlow color="rgba(46,204,113,0.3)" />
+      <div className="flex items-center gap-2.5 mb-6">
+        <CardIcon emoji="🃏" bg="rgba(46,204,113,0.15)" />
+        <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase">Integração Anki</h2>
+      </div>
 
-          {/* Auto quest toggle */}
-          <div className="flex items-center justify-between p-3 bg-bg-tertiary rounded-lg">
-            <div>
-              <p className="font-medium text-white">Quest Automática</p>
-              <p className="text-sm text-gray-400">Criar quest diária "Revisar Anki" automaticamente</p>
-            </div>
-            <button
-              onClick={() => updateAutoQuest({ enabled: !config.autoQuest.enabled })}
-              className={`w-12 h-6 rounded-full transition-colors relative ${
-                config.autoQuest.enabled ? 'bg-accent' : 'bg-gray-600'
-              }`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                  config.autoQuest.enabled ? 'translate-x-6' : 'translate-x-0.5'
-                }`}
-              />
-            </button>
-          </div>
+      {/* Habilitar */}
+      <div className="flex items-center justify-between py-3.5 border-b border-white/[0.07]">
+        <div>
+          <h3 className="text-sm font-semibold mb-0.5">Habilitar Anki</h3>
+          <p className="text-[12px] text-gray-500 font-mono">Sincronizar com AnkiConnect (porta 8765)</p>
+        </div>
+        <ToggleSwitch value={config.enabled} onChange={() => updateConfig({ enabled: !config.enabled })} />
+      </div>
 
-          {/* Threshold */}
-          {config.autoQuest.enabled && (
-            <div className="p-3 bg-bg-tertiary rounded-lg">
-              <label className="text-sm text-gray-400 mb-2 block">
-                Threshold de cards para completar quest
-              </label>
-              <input
-                type="number"
-                value={config.autoQuest.threshold}
-                onChange={e => updateAutoQuest({ threshold: Math.max(1, parseInt(e.target.value) || 1) })}
-                min={1}
-                className="w-24 px-3 py-1.5 bg-bg-primary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent"
-              />
-              <span className="text-sm text-gray-500 ml-2">cards/dia</span>
-            </div>
-          )}
+      {/* Quest automática */}
+      <div className="flex items-center justify-between py-3.5 border-b border-white/[0.07]">
+        <div>
+          <h3 className="text-sm font-semibold mb-0.5">Quest Automática</h3>
+          <p className="text-[12px] text-gray-500 font-mono">Criar quest diária "Revisar Anki" automaticamente</p>
+        </div>
+        <ToggleSwitch value={config.autoQuest.enabled} onChange={() => updateAutoQuest({ enabled: !config.autoQuest.enabled })} />
+      </div>
 
-          {/* Test connection */}
-          <div className="flex gap-2">
-            <Button variant="secondary" size="sm" onClick={testConnection}>
-              {testStatus === 'testing' ? 'Testando...' :
-               testStatus === 'success' ? 'Conectado!' :
-               testStatus === 'fail' ? 'Falhou' :
-               'Testar Conexão'}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={clearCache}>
-              Limpar Cache
-            </Button>
+      {/* Threshold */}
+      {config.autoQuest.enabled && (
+        <div className="py-3.5 border-b border-white/[0.07]">
+          <FieldLabel>Threshold de cards para completar quest</FieldLabel>
+          <div className="flex items-center gap-3 mt-1">
+            <div className="bg-[#18181f] border border-white/[0.07] rounded-xl px-4 py-2.5 font-mono text-xl font-medium text-accent min-w-[70px] text-center">
+              {config.autoQuest.threshold}
+            </div>
+            <span className="text-xs text-gray-500 font-mono">cards/dia</span>
+            <input
+              type="range"
+              min={1}
+              max={100}
+              value={config.autoQuest.threshold}
+              onChange={(e) => updateAutoQuest({ threshold: Math.max(1, parseInt(e.target.value) || 1) })}
+              className="flex-1 accent-accent"
+            />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-2 pt-4">
+        <button
+          type="button"
+          onClick={testConnection}
+          className="flex-1 py-2.5 rounded-xl text-xs font-bold border tracking-[0.04em] transition-all bg-accent/15 text-accent border-accent/30 hover:bg-accent hover:text-white hover:shadow-[0_4px_16px_rgba(124,111,255,0.4)]"
+        >
+          {testLabel}
+        </button>
+        <button
+          type="button"
+          onClick={clearCache}
+          className="flex-1 py-2.5 rounded-xl text-xs font-bold border tracking-[0.04em] transition-all bg-[#18181f] text-gray-300 border-white/[0.07] hover:border-accent hover:text-accent hover:bg-accent/[0.08]"
+        >
+          🗑 Limpar Cache
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -830,94 +870,97 @@ function CanvasSettingsSection() {
     }
   };
 
+  const testLabel =
+    testStatus === 'testing' ? 'Testando...' :
+    testStatus === 'success' ? '✓ Conectado!' :
+    testStatus === 'fail'    ? '✗ Falhou'     :
+    '⚡ Testar';
+
   return (
     <>
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Layers size={20} className="text-accent" />
-          Integração Canvas
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Toggle */}
-          <div className="flex items-center justify-between p-3 bg-bg-tertiary rounded-lg">
-            <div>
-              <p className="font-medium text-white">Habilitar Canvas</p>
-              <p className="text-sm text-gray-400">Sincronizar matérias e provas do Canvas LMS</p>
-            </div>
-            <button
-              onClick={() => updateConfig({ enabled: !config.enabled })}
-              className={`w-12 h-6 rounded-full transition-colors relative ${config.enabled ? 'bg-accent' : 'bg-gray-600'}`}
-            >
-              <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${config.enabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
-            </button>
-          </div>
-
-          {config.enabled && (
-            <>
-              {/* URL */}
-              <div className="p-3 bg-bg-tertiary rounded-lg space-y-2">
-                <label className="text-sm text-gray-400">URL da Instituição</label>
-                <input
-                  type="url"
-                  value={config.baseUrl}
-                  onChange={(e) => updateConfig({ baseUrl: e.target.value })}
-                  placeholder="https://suauniversidade.instructure.com"
-                  className="w-full px-3 py-1.5 bg-bg-primary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent"
-                />
-                <p className="text-xs text-gray-500">
-                  Configure também: <code className="text-accent">CANVAS_URL</code> no arquivo <code className="text-accent">.env.local</code>
-                </p>
-              </div>
-
-              {/* Token */}
-              <div className="p-3 bg-bg-tertiary rounded-lg space-y-2">
-                <label className="text-sm text-gray-400">Token de Acesso</label>
-                <input
-                  type="password"
-                  value={config.token}
-                  onChange={(e) => updateConfig({ token: e.target.value })}
-                  placeholder="Cole seu token pessoal do Canvas"
-                  className="w-full px-3 py-1.5 bg-bg-primary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent"
-                />
-                <p className="text-xs text-gray-500">
-                  Canvas → Conta → Configurações → Tokens de Acesso → Gerar Token
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" size="sm" onClick={testConnection}>
-                  {testStatus === 'testing' ? 'Testando...' :
-                   testStatus === 'success' ? 'Conectado!' :
-                   testStatus === 'fail' ? 'Falhou' :
-                   'Testar Conexão'}
-                </Button>
-                <Button variant="primary" size="sm" onClick={() => setShowImportModal(true)}>
-                  Escolher Matérias
-                </Button>
-                <Button variant="secondary" size="sm" onClick={handleSyncGrades} isLoading={isSyncing}>
-                  <RefreshCw size={14} className={`mr-1.5 ${isSyncing ? 'animate-spin' : ''}`} />
-                  Sync Notas
-                </Button>
-              </div>
-
-              {syncResult && (
-                <p className="text-sm text-accent">{syncResult}</p>
-              )}
-            </>
-          )}
+      <div className={CARD}>
+        <CardGlow color="rgba(78,205,196,0.3)" />
+        <div className="flex items-center gap-2.5 mb-6">
+          <CardIcon emoji="🎓" bg="rgba(78,205,196,0.15)" />
+          <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase">Integração Canvas</h2>
         </div>
-      </CardContent>
-    </Card>
 
-    <CanvasCourseSelectModal
-      isOpen={showImportModal}
-      onClose={() => setShowImportModal(false)}
-      onImported={(msg) => { setSyncResult(msg); setTimeout(() => setSyncResult(null), 4000); }}
-    />
+        <div className="flex items-center justify-between py-3.5 border-b border-white/[0.07] mb-4">
+          <div>
+            <h3 className="text-sm font-semibold mb-0.5">Habilitar Canvas</h3>
+            <p className="text-[12px] text-gray-500 font-mono">Sincronizar matérias e provas do Canvas LMS</p>
+          </div>
+          <ToggleSwitch value={config.enabled} onChange={() => updateConfig({ enabled: !config.enabled })} />
+        </div>
+
+        {config.enabled && (
+          <>
+            <div className="mb-4">
+              <FieldLabel>URL da Instituição</FieldLabel>
+              <input
+                type="url"
+                value={config.baseUrl}
+                onChange={(e) => updateConfig({ baseUrl: e.target.value })}
+                placeholder="https://suauniversidade.instructure.com"
+                className="w-full bg-[#18181f] border border-white/[0.07] rounded-xl text-gray-200 font-mono text-sm py-2.5 px-3.5 outline-none focus:border-accent/50 focus:bg-accent/[0.05] focus:shadow-[0_0_0_3px_rgba(124,111,255,0.1)] transition-all"
+              />
+              <p className="text-[11px] text-gray-600 font-mono mt-1.5">
+                Configure também: <code className="text-accent">CANVAS_URL</code> no arquivo <code className="text-accent">.env.local</code>
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <FieldLabel>Token de Acesso</FieldLabel>
+              <input
+                type="password"
+                value={config.token}
+                onChange={(e) => updateConfig({ token: e.target.value })}
+                placeholder="Cole seu token pessoal do Canvas"
+                className="w-full bg-[#18181f] border border-white/[0.07] rounded-xl text-gray-200 font-mono text-sm py-2.5 px-3.5 outline-none focus:border-accent/50 focus:bg-accent/[0.05] focus:shadow-[0_0_0_3px_rgba(124,111,255,0.1)] transition-all"
+              />
+              <p className="text-[11px] text-gray-600 font-mono mt-1.5">
+                Canvas → Conta → Configurações → Tokens de Acesso → Gerar Token
+              </p>
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={testConnection}
+                className="flex-1 min-w-[100px] text-center py-2.5 rounded-xl text-xs font-bold border tracking-[0.04em] transition-all bg-accent/15 text-accent border-accent/30 hover:bg-accent hover:text-white hover:shadow-[0_4px_16px_rgba(124,111,255,0.4)]"
+              >
+                {testLabel}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowImportModal(true)}
+                className="flex-1 min-w-[100px] text-center py-2.5 rounded-xl text-xs font-bold border tracking-[0.04em] transition-all bg-[#18181f] text-gray-300 border-white/[0.07] hover:border-accent hover:text-accent hover:bg-accent/[0.08]"
+              >
+                📚 Escolher Matérias
+              </button>
+              <button
+                type="button"
+                onClick={handleSyncGrades}
+                disabled={isSyncing}
+                className="flex-1 min-w-[100px] text-center py-2.5 rounded-xl text-xs font-bold border tracking-[0.04em] transition-all bg-[#18181f] text-gray-300 border-white/[0.07] hover:border-accent hover:text-accent hover:bg-accent/[0.08] disabled:opacity-50"
+              >
+                <RefreshCw size={11} className={`inline mr-1 ${isSyncing ? 'animate-spin' : ''}`} />
+                {isSyncing ? 'Sincronizando...' : 'Sync Notas'}
+              </button>
+            </div>
+
+            {syncResult && (
+              <p className="text-xs text-accent font-mono mt-3">{syncResult}</p>
+            )}
+          </>
+        )}
+      </div>
+
+      <CanvasCourseSelectModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImported={(msg) => { setSyncResult(msg); setTimeout(() => setSyncResult(null), 4000); }}
+      />
     </>
   );
 }
@@ -927,7 +970,6 @@ function CanvasSettingsSection() {
 // ============================================
 
 function courseYear(c: CanvasCourse): string {
-  // Tenta extrair ano do term.start_at, depois term.name, depois 'Outros'
   if (c.term?.start_at) return String(new Date(c.term.start_at).getFullYear());
   if (c.term?.name) {
     const m = c.term.name.match(/\d{4}/);
@@ -964,8 +1006,6 @@ function CanvasCourseSelectModal({
     }).finally(() => setIsLoading(false));
   }, [isOpen]);
 
-  // Deduplicar por id (Canvas retorna o mesmo curso várias vezes quando há múltiplas matrículas)
-  // e agrupar por ano, mais recente primeiro
   const grouped = useMemo(() => {
     const seen = new Set<number>();
     const unique = courses.filter(c => {
@@ -973,7 +1013,6 @@ function CanvasCourseSelectModal({
       seen.add(c.id);
       return true;
     });
-
     const map = new Map<string, CanvasCourse[]>();
     for (const c of unique) {
       const year = courseYear(c);
@@ -1009,8 +1048,6 @@ function CanvasCourseSelectModal({
     try {
       const result = await canvasService.importCourses(Array.from(selected), courses);
       clearIgnoredCanvasCourseIds();
-
-      // Sincroniza provas/trabalhos automaticamente após importar matérias
       const sync = await canvasService.syncGrades();
       const parts: string[] = [];
       if (result.added > 0) parts.push(`${result.added} matéria(s) adicionada(s)`);
@@ -1029,7 +1066,6 @@ function CanvasCourseSelectModal({
         <p className="text-sm text-gray-400">
           Selecione as matérias para importar. Matérias já importadas não serão duplicadas. Para remover uma matéria, use o botão de exclusão na página Faculdade.
         </p>
-
         {isLoading ? (
           <div className="py-16 text-center text-gray-500 text-sm">Carregando cursos do Canvas...</div>
         ) : courses.length === 0 ? (
@@ -1041,14 +1077,12 @@ function CanvasCourseSelectModal({
               const someSelected = yearCourses.some(c => selected.has(c.id));
               return (
                 <div key={year}>
-                  {/* Year header — div, não button, para não competir com clicks dos cursos */}
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-sm font-bold text-white">{year}</span>
                     <div className="flex-1 h-px bg-border" />
                     <span className="text-xs text-gray-500">
                       {yearCourses.filter(c => selected.has(c.id)).length}/{yearCourses.length}
                     </span>
-                    {/* Botão de selecionar/desmarcar ano — área de clique pequena e explícita */}
                     <button
                       type="button"
                       onClick={() => toggleYear(year, yearCourses)}
@@ -1063,8 +1097,6 @@ function CanvasCourseSelectModal({
                       }
                     </button>
                   </div>
-
-                  {/* Cursos em grid 2 colunas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                     {yearCourses.map(c => (
                       <button
@@ -1093,7 +1125,6 @@ function CanvasCourseSelectModal({
             })}
           </div>
         )}
-
         <div className="flex gap-2 pt-1 border-t border-border">
           <Button className="flex-1" onClick={handleSave} isLoading={isSaving} disabled={isLoading || courses.length === 0}>
             <CheckSquare size={15} className="mr-1.5" />
@@ -1102,406 +1133,6 @@ function CanvasCourseSelectModal({
           <Button variant="secondary" onClick={onClose}>Cancelar</Button>
         </div>
       </div>
-    </Modal>
-  );
-}
-
-interface GoalModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  editingGoal?: ActivityGoal | null;
-}
-
-// ============================================
-// Category Modal
-// ============================================
-
-interface CategoryModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  editingCategory?: CustomActivityCategory | null;
-}
-
-const COLOR_OPTIONS = ['#2e2ed1', '#6366F1', '#EF4444', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#14B8A6'];
-
-function CategoryModal({ isOpen, onClose, editingCategory }: CategoryModalProps) {
-  const [key, setKey] = useState('');
-  const [name, setName] = useState('');
-  const [icon, setIcon] = useState('BookOpen');
-  const [color, setColor] = useState('#6366F1');
-  const [baseXP, setBaseXP] = useState(15);
-  const [xpPerMinute, setXpPerMinute] = useState(1.5);
-  const [goldPerSession, setGoldPerSession] = useState(5);
-  const [attributeImpacts, setAttributeImpacts] = useState<CustomAttributeImpact[]>([
-    { attribute: 'knowledge', gainPerMinute: 0.08 }
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (isOpen && editingCategory) {
-      setKey(editingCategory.key);
-      setName(editingCategory.name);
-      setIcon(editingCategory.icon);
-      setColor(editingCategory.color);
-      setBaseXP(editingCategory.baseXP);
-      setXpPerMinute(editingCategory.xpPerMinute);
-      setGoldPerSession(editingCategory.goldPerSession);
-
-      // Carregar attributeImpacts se existir, senão converter do formato legado
-      if (editingCategory.attributeImpacts && editingCategory.attributeImpacts.length > 0) {
-        setAttributeImpacts(editingCategory.attributeImpacts);
-      } else if (editingCategory.primaryAttribute) {
-        const impacts: CustomAttributeImpact[] = [
-          { attribute: editingCategory.primaryAttribute, gainPerMinute: 0.08 }
-        ];
-        if (editingCategory.secondaryAttribute) {
-          impacts.push({ attribute: editingCategory.secondaryAttribute, gainPerMinute: 0.04 });
-        }
-        setAttributeImpacts(impacts);
-      }
-    } else if (isOpen && !editingCategory) {
-      setKey('');
-      setName('');
-      setIcon('BookOpen');
-      setColor('#6366F1');
-      setBaseXP(15);
-      setXpPerMinute(1.5);
-      setGoldPerSession(5);
-      setAttributeImpacts([{ attribute: 'knowledge', gainPerMinute: 0.08 }]);
-    }
-    setError('');
-  }, [isOpen, editingCategory]);
-
-  const handleAddAttribute = () => {
-    // Encontrar primeiro atributo não usado
-    const usedAttrs = attributeImpacts.map(a => a.attribute);
-    const availableAttr = Object.keys(INITIAL_ATTRIBUTES).find(
-      k => !usedAttrs.includes(k as AttributeType)
-    ) as AttributeType | undefined;
-
-    if (availableAttr) {
-      setAttributeImpacts([...attributeImpacts, { attribute: availableAttr, gainPerMinute: 0.04 }]);
-    }
-  };
-
-  const handleRemoveAttribute = (index: number) => {
-    if (attributeImpacts.length > 1) {
-      setAttributeImpacts(attributeImpacts.filter((_, i) => i !== index));
-    }
-  };
-
-  const handleUpdateAttribute = (index: number, field: 'attribute' | 'gainPerMinute', value: string | number) => {
-    const updated = [...attributeImpacts];
-    if (field === 'attribute') {
-      updated[index] = { ...updated[index], attribute: value as AttributeType };
-    } else {
-      updated[index] = { ...updated[index], gainPerMinute: value as number };
-    }
-    setAttributeImpacts(updated);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
-
-    const categoryKey = key || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-
-    try {
-      if (editingCategory) {
-        await categoryRepository.update(editingCategory.id, {
-          key: categoryKey,
-          name,
-          icon,
-          color,
-          baseXP,
-          xpPerMinute,
-          goldPerSession,
-          attributeImpacts,
-        });
-      } else {
-        await categoryRepository.create({
-          key: categoryKey,
-          name,
-          icon,
-          color,
-          baseXP,
-          xpPerMinute,
-          goldPerSession,
-          attributeImpacts,
-        });
-      }
-      handleClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar categoria');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleClose = () => {
-    setKey('');
-    setName('');
-    setIcon('BookOpen');
-    setColor('#6366F1');
-    setBaseXP(15);
-    setXpPerMinute(1.5);
-    setGoldPerSession(5);
-    setAttributeImpacts([{ attribute: 'knowledge', gainPerMinute: 0.08 }]);
-    setError('');
-    onClose();
-  };
-
-  // Calcular bonus de atributos para preview
-  const attributeBonus = attributeImpacts.length >= 4 ? 1.3 :
-                         attributeImpacts.length >= 3 ? 1.2 :
-                         attributeImpacts.length >= 2 ? 1.1 : 1.0;
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title={editingCategory ? 'Editar Categoria' : 'Nova Categoria'}
-      subtitle="Crie uma categoria personalizada para suas atividades"
-      size="lg"
-    >
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-            {error}
-          </div>
-        )}
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Nome</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Ex: Programação"
-              required
-              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Key (opcional)</label>
-            <input
-              type="text"
-              value={key}
-              onChange={(e) => setKey(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
-              placeholder="programacao"
-              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Ícone</label>
-          <div className="grid grid-cols-7 gap-2 max-h-48 overflow-y-auto scrollbar-thin p-1">
-            {ACTIVITY_ICON_NAMES.map((iconName) => (
-              <button
-                key={iconName}
-                type="button"
-                onClick={() => setIcon(iconName)}
-                title={ACTIVITY_ICON_LABELS[iconName] || iconName}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                  icon === iconName
-                    ? 'bg-accent/20 ring-2 ring-accent'
-                    : 'bg-bg-tertiary hover:bg-bg-hover'
-                }`}
-                style={{ color: icon === iconName ? color : undefined }}
-              >
-                <ActivityIcon icon={iconName} size={20} />
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Cor</label>
-          <div className="flex flex-wrap gap-2">
-            {COLOR_OPTIONS.map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => setColor(opt)}
-                className={`w-10 h-10 rounded-lg transition-all ${
-                  color === opt ? 'ring-2 ring-white ring-offset-2 ring-offset-bg-secondary' : ''
-                }`}
-                style={{ backgroundColor: opt }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">XP Base</label>
-            <input
-              type="number"
-              min="1"
-              value={baseXP}
-              onChange={(e) => setBaseXP(parseInt(e.target.value) || 0)}
-              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">XP/min</label>
-            <input
-              type="number"
-              min="0.1"
-              step="0.1"
-              value={xpPerMinute}
-              onChange={(e) => setXpPerMinute(parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Gold/sessão</label>
-            <input
-              type="number"
-              min="1"
-              value={goldPerSession}
-              onChange={(e) => setGoldPerSession(parseInt(e.target.value) || 0)}
-              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent"
-            />
-          </div>
-        </div>
-
-        {/* Attribute Impacts */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-300">
-              Atributos Impactados
-              {attributeImpacts.length >= 2 && (
-                <span className="ml-2 text-xs text-accent">
-                  (+{Math.round((attributeBonus - 1) * 100)}% bonus XP/Gold)
-                </span>
-              )}
-            </label>
-            {attributeImpacts.length < 7 && (
-              <button
-                type="button"
-                onClick={handleAddAttribute}
-                className="flex items-center gap-1 px-2 py-1 text-xs text-accent hover:bg-accent/10 rounded transition-colors"
-              >
-                <Plus size={14} />
-                Adicionar
-              </button>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            {attributeImpacts.map((impact, index) => {
-              const attrInfo = INITIAL_ATTRIBUTES[impact.attribute];
-              const usedAttrs = attributeImpacts.filter((_, i) => i !== index).map(a => a.attribute);
-
-              return (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 p-3 bg-bg-tertiary rounded-lg border border-border"
-                >
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
-                    style={{ backgroundColor: `${attrInfo?.color}20`, color: attrInfo?.color }}
-                  >
-                    {index + 1}
-                  </div>
-
-                  <select
-                    value={impact.attribute}
-                    onChange={(e) => handleUpdateAttribute(index, 'attribute', e.target.value)}
-                    className="flex-1 px-3 py-2 bg-bg-secondary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent"
-                  >
-                    {Object.entries(INITIAL_ATTRIBUTES).map(([key, attr]) => (
-                      <option
-                        key={key}
-                        value={key}
-                        disabled={usedAttrs.includes(key as AttributeType)}
-                      >
-                        {attr.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">Ganho/min:</span>
-                    <input
-                      type="number"
-                      min="0.01"
-                      step="0.01"
-                      value={impact.gainPerMinute}
-                      onChange={(e) => handleUpdateAttribute(index, 'gainPerMinute', parseFloat(e.target.value) || 0)}
-                      className="w-20 px-2 py-2 bg-bg-secondary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent"
-                    />
-                  </div>
-
-                  {attributeImpacts.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveAttribute(index)}
-                      className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                    >
-                      <X size={16} />
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <p className="text-xs text-gray-500 mt-2">
-            Mais atributos = mais bonus de XP e Gold nas atividades e quests relacionadas
-          </p>
-        </div>
-
-        {/* Preview */}
-        <div className="p-4 bg-bg-tertiary rounded-xl border border-border">
-          <p className="text-xs text-gray-400 mb-3">Preview</p>
-          <div className="flex items-center gap-3">
-            <div
-              className="w-12 h-12 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: `${color}20`, color: color }}
-            >
-              <ActivityIcon icon={icon} size={28} />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-white">{name || 'Nome da categoria'}</p>
-              <p className="text-sm text-gray-400">
-                {baseXP} XP + {xpPerMinute}/min · {goldPerSession} gold
-              </p>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {attributeImpacts.map((impact, i) => {
-                  const attrInfo = INITIAL_ATTRIBUTES[impact.attribute];
-                  return (
-                    <span
-                      key={i}
-                      className="px-2 py-0.5 text-[10px] font-bold rounded uppercase"
-                      style={{ backgroundColor: `${attrInfo?.color}20`, color: attrInfo?.color }}
-                    >
-                      +{impact.gainPerMinute}/min {attrInfo?.name}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-3 pt-2">
-          <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button type="submit" className="flex-1" isLoading={isLoading}>
-            {editingCategory ? 'Salvar' : 'Criar Categoria'}
-          </Button>
-        </div>
-      </form>
     </Modal>
   );
 }
@@ -1519,30 +1150,20 @@ function AccentColorPicker() {
     applyAccentColor(colorConfig.color, colorConfig.secondary);
   };
 
-  const currentColorConfig = ACCENT_COLORS.find(c => c.color === selectedColor) || ACCENT_COLORS[0];
-
   return (
-    <div className="p-4 bg-bg-tertiary rounded-lg">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="font-medium text-white">Cor de Destaque</p>
-          <p className="text-sm text-gray-400">{currentColorConfig.name}</p>
-        </div>
-        <div
-          className="w-8 h-8 rounded-full ring-2 ring-white/20"
-          style={{ backgroundColor: selectedColor }}
-        />
-      </div>
-      <div className="flex flex-wrap gap-3">
+    <div className="mb-5">
+      <FieldLabel>Cor de destaque</FieldLabel>
+      <div className="flex flex-wrap gap-2 mt-1">
         {ACCENT_COLORS.map((colorConfig) => (
           <button
             key={colorConfig.id}
+            type="button"
             onClick={() => handleColorChange(colorConfig)}
             title={colorConfig.name}
-            className={`w-10 h-10 rounded-full transition-all ${
+            className={`w-8 h-8 rounded-full border-2 transition-all ${
               selectedColor === colorConfig.color
-                ? 'ring-2 ring-white ring-offset-2 ring-offset-bg-tertiary scale-110'
-                : 'hover:scale-105'
+                ? 'border-white scale-110 shadow-[0_0_12px_rgba(255,255,255,0.3)]'
+                : 'border-transparent hover:scale-105'
             }`}
             style={{ backgroundColor: colorConfig.color }}
           />
@@ -1553,7 +1174,7 @@ function AccentColorPicker() {
 }
 
 // ============================================
-// Quest Colors Picker (Calendar Legend)
+// Quest Colors Picker
 // ============================================
 
 function QuestColorsPicker() {
@@ -1574,44 +1195,36 @@ function QuestColorsPicker() {
   };
 
   return (
-    <div className="p-4 bg-bg-tertiary rounded-lg">
-      <div className="mb-4">
-        <p className="font-medium text-white">Cores do Calendario</p>
-        <p className="text-sm text-gray-400">Personalize as cores da legenda</p>
-      </div>
-      <div className="space-y-3">
+    <div>
+      <FieldLabel>Cores do Calendário</FieldLabel>
+      <div className="grid grid-cols-3 gap-2 mt-1">
         {(Object.keys(categoryLabels) as Array<keyof QuestCategoryColors>).map((category) => (
-          <div key={category} className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className="w-8 h-5 rounded"
-                style={{ backgroundColor: colors[category] }}
-              />
-              <span className="text-sm text-gray-300">{categoryLabels[category]}</span>
-            </div>
-            {editingCategory === category ? (
-              <div className="flex flex-wrap gap-2 max-w-[200px]">
+          <div key={category}>
+            <button
+              type="button"
+              onClick={() => setEditingCategory(editingCategory === category ? null : category)}
+              className="flex items-center gap-2 px-3 py-2.5 bg-[#18181f] rounded-lg border border-white/[0.07] hover:border-white/[0.15] transition-all w-full"
+            >
+              <div className="w-3 h-3 rounded-[3px] shrink-0" style={{ backgroundColor: colors[category] }} />
+              <span className="text-[11px] font-mono truncate">{categoryLabels[category]}</span>
+            </button>
+            {editingCategory === category && (
+              <div className="flex flex-wrap gap-1.5 mt-1.5 p-2 bg-[#18181f] rounded-lg border border-white/[0.07]">
                 {QUEST_COLOR_OPTIONS.map((option) => (
                   <button
                     key={option.id}
+                    type="button"
                     onClick={() => handleColorChange(category, option.color)}
                     title={option.name}
-                    className={`w-6 h-6 rounded-full transition-all ${
+                    className={`w-5 h-5 rounded-full border-2 transition-all ${
                       colors[category] === option.color
-                        ? 'ring-2 ring-white ring-offset-1 ring-offset-bg-tertiary scale-110'
-                        : 'hover:scale-110'
+                        ? 'border-white scale-110 shadow-[0_0_8px_rgba(255,255,255,0.3)]'
+                        : 'border-transparent hover:scale-110'
                     }`}
                     style={{ backgroundColor: option.color }}
                   />
                 ))}
               </div>
-            ) : (
-              <button
-                onClick={() => setEditingCategory(category)}
-                className="text-xs text-accent hover:text-accent/80 transition-colors"
-              >
-                Alterar
-              </button>
             )}
           </div>
         ))}
@@ -1624,6 +1237,12 @@ function QuestColorsPicker() {
 // Goal Modal
 // ============================================
 
+interface GoalModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  editingGoal?: ActivityGoal | null;
+}
+
 function GoalModal({ isOpen, onClose, editingGoal }: GoalModalProps) {
   const [category, setCategory] = useState<ActivityCategory>('study');
   const [targetDuration, setTargetDuration] = useState(30);
@@ -1631,12 +1250,10 @@ function GoalModal({ isOpen, onClose, editingGoal }: GoalModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [allConfigs, setAllConfigs] = useState(ACTIVITY_CONFIGS);
 
-  // Carregar todas as configs (padrão + customizadas)
   useEffect(() => {
     categoryRepository.getAllActivityConfigs().then(setAllConfigs);
   }, [isOpen]);
 
-  // Preencher form quando editando
   useEffect(() => {
     if (isOpen && editingGoal) {
       setCategory(editingGoal.category);
@@ -1652,20 +1269,11 @@ function GoalModal({ isOpen, onClose, editingGoal }: GoalModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
       if (editingGoal) {
-        await goalRepository.update(editingGoal.id, {
-          category,
-          targetDuration,
-          targetSessions,
-        });
+        await goalRepository.update(editingGoal.id, { category, targetDuration, targetSessions });
       } else {
-        await goalRepository.create({
-          category,
-          targetDuration,
-          targetSessions,
-        });
+        await goalRepository.create({ category, targetDuration, targetSessions });
       }
       handleClose();
     } catch (error) {
@@ -1706,9 +1314,7 @@ function GoalModal({ isOpen, onClose, editingGoal }: GoalModalProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Min/dia (quests)
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Min/dia (quests)</label>
             <input
               type="number"
               min="1"
@@ -1717,11 +1323,8 @@ function GoalModal({ isOpen, onClose, editingGoal }: GoalModalProps) {
               className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Dias/semana (check-ins)
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Dias/semana (check-ins)</label>
             <input
               type="number"
               min="1"
@@ -1732,7 +1335,6 @@ function GoalModal({ isOpen, onClose, editingGoal }: GoalModalProps) {
           </div>
         </div>
 
-        {/* Preview */}
         <div className="p-4 bg-bg-tertiary rounded-xl border border-border">
           <p className="text-xs text-gray-400 mb-2">Resumo da Meta</p>
           <p className="text-white">
@@ -1748,11 +1350,258 @@ function GoalModal({ isOpen, onClose, editingGoal }: GoalModalProps) {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>
-            Cancelar
-          </Button>
+          <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>Cancelar</Button>
           <Button type="submit" className="flex-1" isLoading={isLoading}>
             {editingGoal ? 'Salvar' : 'Criar Meta'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+// ============================================
+// Category Modal
+// ============================================
+
+interface CategoryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  editingCategory?: CustomActivityCategory | null;
+}
+
+const COLOR_OPTIONS = ['#2e2ed1', '#6366F1', '#EF4444', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#14B8A6'];
+
+function CategoryModal({ isOpen, onClose, editingCategory }: CategoryModalProps) {
+  const [key, setKey] = useState('');
+  const [name, setName] = useState('');
+  const [icon, setIcon] = useState('BookOpen');
+  const [color, setColor] = useState('#6366F1');
+  const [baseXP, setBaseXP] = useState(15);
+  const [xpPerMinute, setXpPerMinute] = useState(1.5);
+  const [goldPerSession, setGoldPerSession] = useState(5);
+  const [attributeImpacts, setAttributeImpacts] = useState<CustomAttributeImpact[]>([
+    { attribute: 'knowledge', gainPerMinute: 0.08 },
+  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen && editingCategory) {
+      setKey(editingCategory.key);
+      setName(editingCategory.name);
+      setIcon(editingCategory.icon);
+      setColor(editingCategory.color);
+      setBaseXP(editingCategory.baseXP);
+      setXpPerMinute(editingCategory.xpPerMinute);
+      setGoldPerSession(editingCategory.goldPerSession);
+      if (editingCategory.attributeImpacts && editingCategory.attributeImpacts.length > 0) {
+        setAttributeImpacts(editingCategory.attributeImpacts);
+      } else if (editingCategory.primaryAttribute) {
+        const impacts: CustomAttributeImpact[] = [{ attribute: editingCategory.primaryAttribute, gainPerMinute: 0.08 }];
+        if (editingCategory.secondaryAttribute) impacts.push({ attribute: editingCategory.secondaryAttribute, gainPerMinute: 0.04 });
+        setAttributeImpacts(impacts);
+      }
+    } else if (isOpen && !editingCategory) {
+      setKey(''); setName(''); setIcon('BookOpen'); setColor('#6366F1');
+      setBaseXP(15); setXpPerMinute(1.5); setGoldPerSession(5);
+      setAttributeImpacts([{ attribute: 'knowledge', gainPerMinute: 0.08 }]);
+    }
+    setError('');
+  }, [isOpen, editingCategory]);
+
+  const handleAddAttribute = () => {
+    const usedAttrs = attributeImpacts.map(a => a.attribute);
+    const availableAttr = Object.keys(INITIAL_ATTRIBUTES).find(k => !usedAttrs.includes(k as AttributeType)) as AttributeType | undefined;
+    if (availableAttr) setAttributeImpacts([...attributeImpacts, { attribute: availableAttr, gainPerMinute: 0.04 }]);
+  };
+
+  const handleRemoveAttribute = (index: number) => {
+    if (attributeImpacts.length > 1) setAttributeImpacts(attributeImpacts.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateAttribute = (index: number, field: 'attribute' | 'gainPerMinute', value: string | number) => {
+    const updated = [...attributeImpacts];
+    if (field === 'attribute') updated[index] = { ...updated[index], attribute: value as AttributeType };
+    else updated[index] = { ...updated[index], gainPerMinute: value as number };
+    setAttributeImpacts(updated);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+    const categoryKey = key || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    try {
+      if (editingCategory) {
+        await categoryRepository.update(editingCategory.id, { key: categoryKey, name, icon, color, baseXP, xpPerMinute, goldPerSession, attributeImpacts });
+      } else {
+        await categoryRepository.create({ key: categoryKey, name, icon, color, baseXP, xpPerMinute, goldPerSession, attributeImpacts });
+      }
+      handleClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao salvar categoria');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setKey(''); setName(''); setIcon('BookOpen'); setColor('#6366F1');
+    setBaseXP(15); setXpPerMinute(1.5); setGoldPerSession(5);
+    setAttributeImpacts([{ attribute: 'knowledge', gainPerMinute: 0.08 }]);
+    setError('');
+    onClose();
+  };
+
+  const attributeBonus = attributeImpacts.length >= 4 ? 1.3 : attributeImpacts.length >= 3 ? 1.2 : attributeImpacts.length >= 2 ? 1.1 : 1.0;
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={editingCategory ? 'Editar Categoria' : 'Nova Categoria'}
+      subtitle="Crie uma categoria personalizada para suas atividades"
+      size="lg"
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {error && (
+          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">{error}</div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Nome</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Programação" required
+              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Key (opcional)</label>
+            <input type="text" value={key} onChange={(e) => setKey(e.target.value.toLowerCase().replace(/\s+/g, '-'))} placeholder="programacao"
+              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent" />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Ícone</label>
+          <div className="grid grid-cols-7 gap-2 max-h-48 overflow-y-auto scrollbar-thin p-1">
+            {ACTIVITY_ICON_NAMES.map((iconName) => (
+              <button key={iconName} type="button" onClick={() => setIcon(iconName)} title={ACTIVITY_ICON_LABELS[iconName] || iconName}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${icon === iconName ? 'bg-accent/20 ring-2 ring-accent' : 'bg-bg-tertiary hover:bg-bg-hover'}`}
+                style={{ color: icon === iconName ? color : undefined }}>
+                <ActivityIcon icon={iconName} size={20} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Cor</label>
+          <div className="flex flex-wrap gap-2">
+            {COLOR_OPTIONS.map((opt) => (
+              <button key={opt} type="button" onClick={() => setColor(opt)}
+                className={`w-10 h-10 rounded-lg transition-all ${color === opt ? 'ring-2 ring-white ring-offset-2 ring-offset-bg-secondary' : ''}`}
+                style={{ backgroundColor: opt }} />
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">XP Base</label>
+            <input type="number" min="1" value={baseXP} onChange={(e) => setBaseXP(parseInt(e.target.value) || 0)}
+              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">XP/min</label>
+            <input type="number" min="0.1" step="0.1" value={xpPerMinute} onChange={(e) => setXpPerMinute(parseFloat(e.target.value) || 0)}
+              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Gold/sessão</label>
+            <input type="number" min="1" value={goldPerSession} onChange={(e) => setGoldPerSession(parseInt(e.target.value) || 0)}
+              className="w-full px-4 py-2.5 bg-bg-tertiary border border-border rounded-lg text-white focus:outline-none focus:border-accent" />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Atributos Impactados
+              {attributeImpacts.length >= 2 && (
+                <span className="ml-2 text-xs text-accent">(+{Math.round((attributeBonus - 1) * 100)}% bonus XP/Gold)</span>
+              )}
+            </label>
+            {attributeImpacts.length < 7 && (
+              <button type="button" onClick={handleAddAttribute}
+                className="flex items-center gap-1 px-2 py-1 text-xs text-accent hover:bg-accent/10 rounded transition-colors">
+                <Plus size={14} /> Adicionar
+              </button>
+            )}
+          </div>
+          <div className="space-y-2">
+            {attributeImpacts.map((impact, index) => {
+              const attrInfo = INITIAL_ATTRIBUTES[impact.attribute];
+              const usedAttrs = attributeImpacts.filter((_, i) => i !== index).map(a => a.attribute);
+              return (
+                <div key={index} className="flex items-center gap-3 p-3 bg-bg-tertiary rounded-lg border border-border">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
+                    style={{ backgroundColor: `${attrInfo?.color}20`, color: attrInfo?.color }}>
+                    {index + 1}
+                  </div>
+                  <select value={impact.attribute} onChange={(e) => handleUpdateAttribute(index, 'attribute', e.target.value)}
+                    className="flex-1 px-3 py-2 bg-bg-secondary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent">
+                    {Object.entries(INITIAL_ATTRIBUTES).map(([k, attr]) => (
+                      <option key={k} value={k} disabled={usedAttrs.includes(k as AttributeType)}>{attr.name}</option>
+                    ))}
+                  </select>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Ganho/min:</span>
+                    <input type="number" min="0.01" step="0.01" value={impact.gainPerMinute}
+                      onChange={(e) => handleUpdateAttribute(index, 'gainPerMinute', parseFloat(e.target.value) || 0)}
+                      className="w-20 px-2 py-2 bg-bg-secondary border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent" />
+                  </div>
+                  {attributeImpacts.length > 1 && (
+                    <button type="button" onClick={() => handleRemoveAttribute(index)}
+                      className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors">
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-xs text-gray-500 mt-2">Mais atributos = mais bonus de XP e Gold nas atividades e quests relacionadas</p>
+        </div>
+
+        <div className="p-4 bg-bg-tertiary rounded-xl border border-border">
+          <p className="text-xs text-gray-400 mb-3">Preview</p>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}20`, color }}>
+              <ActivityIcon icon={icon} size={28} />
+            </div>
+            <div className="flex-1">
+              <p className="font-medium text-white">{name || 'Nome da categoria'}</p>
+              <p className="text-sm text-gray-400">{baseXP} XP + {xpPerMinute}/min · {goldPerSession} gold</p>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {attributeImpacts.map((impact, i) => {
+                  const attrInfo = INITIAL_ATTRIBUTES[impact.attribute];
+                  return (
+                    <span key={i} className="px-2 py-0.5 text-[10px] font-bold rounded uppercase"
+                      style={{ backgroundColor: `${attrInfo?.color}20`, color: attrInfo?.color }}>
+                      +{impact.gainPerMinute}/min {attrInfo?.name}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>Cancelar</Button>
+          <Button type="submit" className="flex-1" isLoading={isLoading}>
+            {editingCategory ? 'Salvar' : 'Criar Categoria'}
           </Button>
         </div>
       </form>

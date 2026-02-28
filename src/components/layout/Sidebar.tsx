@@ -11,8 +11,11 @@ import {
   User,
   Settings,
   School,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useAuth } from '@/contexts/AuthContext';
+import { SyncStatus } from '@/components/ui/SyncStatus';
 
 interface NavItem {
   icon: React.ReactNode;
@@ -38,6 +41,8 @@ const bottomNavItems: NavItem[] = [
 ];
 
 export function Sidebar() {
+  const { user, signOut, isConfigured } = useAuth();
+
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-bg-secondary border-r border-border flex flex-col z-40">
       {/* Logo */}
@@ -91,6 +96,25 @@ export function Sidebar() {
             <span>{item.label}</span>
           </NavLink>
         ))}
+
+        {/* User info + sync + sign out */}
+        {isConfigured && user && (
+          <div className="mt-2 pt-2 border-t border-border">
+            <div className="px-4 py-2 flex items-center gap-2 justify-between">
+              <div className="min-w-0">
+                <p className="text-xs text-gray-500 truncate">{user.email}</p>
+              </div>
+              <SyncStatus compact />
+            </div>
+            <button
+              onClick={signOut}
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-200"
+            >
+              <LogOut size={16} />
+              <span>Sair</span>
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   );

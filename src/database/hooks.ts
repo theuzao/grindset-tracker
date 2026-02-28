@@ -503,3 +503,199 @@ export function useUpcomingExams(days = 30): SubjectExam[] | undefined {
     return exams.sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate));
   }, [days]);
 }
+
+// ============================================
+// Multi-Device Sync Hooks
+// ============================================
+
+import { useEffect, useState, useCallback } from 'react';
+import {
+  getSyncManager,
+  initializeSyncManager,
+  type MultiDeviceSyncManager,
+} from './multiDeviceSync';
+import type { SyncState } from './syncMetadata';
+
+/**
+ * Hook para acessar o gerenciador de sincronização
+ */
+export function useSyncManager(): MultiDeviceSyncManager | null {
+  const [manager, setManager] = useState<MultiDeviceSyncManager | null>(null);
+
+  useEffect(() => {
+    const syncManager = getSyncManager();
+    setManager(syncManager);
+  }, []);
+
+  return manager;
+}
+
+/**
+ * Hook para monitorar estado de sincronização
+ */
+export function useSyncState(): SyncState | null {
+  const manager = useSyncManager();
+  const [state, setState] = useState<SyncState | null>(null);
+
+  useEffect(() => {
+    if (!manager) return;
+    setState(manager.getState());
+
+    const unsubscribeSyncStart = manager.on('syncStart', () => {
+      setState((prev) => prev ? { ...prev, isSyncing: true } : null);
+    });
+
+    const unsubscribeSyncEnd = manager.on('syncEnd', () => {
+      setState((prev) => prev ? { ...prev, isSyncing: false } : null);
+    });
+
+    return () => {
+      unsubscribeSyncStart();
+      unsubscribeSyncEnd();
+    };
+  }, [manager]);
+
+  return state;
+}
+
+/**
+ * Hook para monitorar se está online/offline
+ */
+export function useOnlineStatus(): boolean {
+  const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  return isOnline;
+}
+
+/**
+ * Hook para inicializar sincronização para usuário
+ */
+export function useSyncInitialize(userId: string | undefined): boolean {
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    initializeSyncManager(userId).then(() => {
+      setInitialized(true);
+    });
+  }, [userId]);
+
+  return initialized;
+}
+
+/**
+ * Hook para forçar sincronização
+ */
+export function useSyncNow() {
+  const manager = useSyncManager();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const sync = useCallback(async () => {
+    if (!manager) return;
+
+    setIsSyncing(true);
+    setError(null);
+
+    try {
+      const success = await manager.sync();
+      if (!success) {
+        setError(new Error('Erro ao sincronizar'));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [manager]);
+
+  return { sync, isSyncing, error };
+}
+
+/**
+ * Hook para forçar sincronização completa
+ */
+export function useForceFullSync() {
+  const manager = useSyncManager();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const forceSync = useCallback(async () => {
+    if (!manager) return;
+
+    setIsSyncing(true);
+    setError(null);
+
+    try {
+      const success = await manager.forceFullSync();
+      if (!success) {
+        setError(new Error('Erro ao fazer sincronização completa'));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [manager]);
+
+  return { forceSync, isSyncing, error };
+}
+
+/**
+ * Hook para obter status de sincronização de um registro específico
+ */
+export function useSyncStatus(
+  table: string,
+  recordId: string
+): { status: string; version: number } | undefined {
+  const manager = useSyncManager();
+  const [syncStatus, setSyncStatus] = useState<
+    { status: string; version: number } | undefined
+  >();
+
+  useEffect(() => {
+    if (!manager || !recordId) return;
+
+    async function getStatus() {
+      const meta = await manager.getRecordSyncStatus(table, recordId);
+      if (meta) {
+        setSyncStatus({
+          status: meta.syncStatus,
+          version: meta.localVersion,
+        });
+      }
+    }
+
+    getStatus();
+  }, [manager, table, recordId]);
+
+  return syncStatus;
+}
+
+/**
+ * Hook com listener de conflitos
+ */
+export function useSyncConflicts(callback: (conflict: any) => void) {
+  const manager = useSyncManager();
+
+  useEffect(() => {
+    if (!manager) return;
+
+    const unsubscribe = manager.on('conflict', callback);
+    return unsubscribe;
+  }, [manager, callback]);
+}
