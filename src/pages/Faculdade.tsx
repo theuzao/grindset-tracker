@@ -1453,7 +1453,7 @@ function ExamForm({ subjectId, exam, onClose }: { subjectId: string; exam?: Subj
   const [title, setTitle] = useState(exam?.title ?? '');
   const [type, setType] = useState<ExamType>(exam?.type ?? 'prova');
   const [date, setDate] = useState(exam?.scheduledDate ?? '');
-  const [weight, setWeight] = useState(exam?.weight ?? 1);
+  const weight = exam?.weight ?? 1;
   const [maxGrade, setMaxGrade] = useState(exam?.maxGrade ?? 10);
   const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
