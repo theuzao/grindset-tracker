@@ -5,7 +5,7 @@
 
 import { db } from './db';
 import { getSupabaseClient, isSupabaseAvailable } from '@/services/supabaseClient';
-import type { SyncMetadata, SyncChange, SyncState } from './syncMetadata';
+import type { SyncMetadata, SyncState } from './syncMetadata';
 import {
   generateDeviceId,
   compareVersions,
@@ -195,7 +195,7 @@ export class MultiDeviceSyncManager {
       for (const change of batch) {
         try {
           // Validar dados
-          const validation = validateSyncData(change.data);
+          const validation = validateSyncData(change.data as { id: string });
           if (!validation.valid) {
             console.error(
               `❌ Dados inválidos para ${change.table}:`,

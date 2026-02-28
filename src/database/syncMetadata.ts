@@ -98,7 +98,7 @@ export function markAsSynced(meta: SyncMetadata): SyncMetadata {
  */
 export function markAsConflict(
   localMeta: SyncMetadata,
-  remoteMeta: SyncMetadata,
+  _remoteMeta: SyncMetadata,
   resolution: 'local-wins' | 'remote-wins' | 'merged'
 ): SyncMetadata {
   return {

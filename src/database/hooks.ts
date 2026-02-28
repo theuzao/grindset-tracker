@@ -671,7 +671,7 @@ export function useSyncStatus(
     if (!manager || !recordId) return;
 
     async function getStatus() {
-      const meta = await manager.getRecordSyncStatus(table, recordId);
+      const meta = await manager!.getRecordSyncStatus(table, recordId);
       if (meta) {
         setSyncStatus({
           status: meta.syncStatus,
