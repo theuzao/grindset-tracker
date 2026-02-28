@@ -14,6 +14,8 @@ import {
   CheckSquare,
   Square,
   RefreshCw,
+  LogOut,
+  Check,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -25,6 +27,8 @@ import { canvasService, type CanvasCourse } from '@/services/canvasService';
 import { useActivityGoals, useActiveDebuffs, useCustomCategories } from '@/database/hooks';
 import { goalRepository } from '@/database/repositories/goalRepository';
 import { categoryRepository } from '@/database/repositories/categoryRepository';
+import { characterRepository } from '@/database/repositories/characterRepository';
+import { useAuth } from '@/contexts/AuthContext';
 import { ACTIVITY_CONFIGS, INITIAL_ATTRIBUTES } from '@/features/gamification/constants';
 import {
   ACCENT_COLORS,
@@ -193,6 +197,7 @@ export function Settings() {
   const activityGoals = useActivityGoals(false);
   const activeDebuffs = useActiveDebuffs();
   const customCategories = useCustomCategories();
+  const { user, signOut, isConfigured } = useAuth();
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState<ActivityGoal | null>(null);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -200,6 +205,15 @@ export function Settings() {
   const [allConfigs, setAllConfigs] = useState<Record<string, ActivityConfig>>(ACTIVITY_CONFIGS);
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [characterName, setCharacterName] = useState('');
+  const [characterId, setCharacterId] = useState('');
+  const [isSavingName, setIsSavingName] = useState(false);
+
+  useEffect(() => {
+    db.character.toCollection().first().then((c) => {
+      if (c) { setCharacterName(c.name); setCharacterId(c.id); }
+    });
+  }, []);
 
   useEffect(() => {
     categoryRepository.getAllActivityConfigs().then(setAllConfigs);
@@ -329,12 +343,32 @@ ${report.aiAnalysisPrompt}
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = '/login';
+  };
+
+  const handleSaveName = async () => {
+    if (!characterId || !characterName.trim()) return;
+    setIsSavingName(true);
+    try {
+      await characterRepository.update(characterId, { name: characterName.trim() });
+    } finally {
+      setIsSavingName(false);
+    }
+  };
+
   const handleReset = async () => {
     if (window.confirm('Tem certeza que deseja resetar todos os dados? Esta ação é irreversível!')) {
       if (window.confirm('ÚLTIMA CHANCE: Todos os seus dados serão perdidos. Continuar?')) {
         try {
           await resetDatabase();
-          window.location.reload();
+          if (isConfigured && user) {
+            await signOut();
+            window.location.href = '/login';
+          } else {
+            window.location.reload();
+          }
         } catch (error) {
           console.error('Reset failed:', error);
           alert('Erro ao resetar dados');
@@ -686,6 +720,59 @@ ${report.aiAnalysisPrompt}
                   <Trash2 size={13} /> Deletar Tudo
                 </DataBtn>
               </div>
+            </div>
+          </div>
+
+          <SectionDivider label="Conta & Sistema" />
+
+          {/* ── Conta ── */}
+          <div className={`xl:col-span-2 ${CARD}`}>
+            <CardGlow color="rgba(124,111,255,0.3)" />
+            <div className="flex items-center gap-2.5 mb-6">
+              <CardIcon emoji="👤" bg="rgba(124,111,255,0.15)" />
+              <h2 className="text-[13px] font-bold tracking-[0.08em] uppercase">Conta</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Nome do personagem */}
+              <div className="p-4 bg-[#18181f] rounded-xl border border-white/[0.07]">
+                <FieldLabel>Nome do personagem</FieldLabel>
+                <div className="flex gap-2 mt-1">
+                  <input
+                    value={characterName}
+                    onChange={(e) => setCharacterName(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+                    maxLength={32}
+                    className="flex-1 bg-[#111118] border border-white/[0.07] rounded-xl text-gray-200 font-mono text-sm py-2 px-3 outline-none focus:border-accent/50 focus:bg-accent/[0.05] transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveName}
+                    disabled={isSavingName}
+                    className="px-3 py-2 rounded-xl text-xs font-bold border tracking-[0.04em] transition-all bg-accent/15 text-accent border-accent/30 hover:bg-accent hover:text-white disabled:opacity-50"
+                  >
+                    {isSavingName ? '...' : <Check size={14} />}
+                  </button>
+                </div>
+              </div>
+              {/* Sessão / Logout */}
+              {isConfigured && user ? (
+                <div className="flex items-center justify-between p-4 bg-[#18181f] rounded-xl border border-white/[0.07]">
+                  <div>
+                    <h3 className="text-[13px] font-semibold mb-0.5">Sessão</h3>
+                    <p className="text-[11px] text-gray-500 font-mono truncate max-w-[200px]">{user.email}</p>
+                  </div>
+                  <DataBtn onClick={handleSignOut} variant="danger">
+                    <LogOut size={13} /> Sair
+                  </DataBtn>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-4 bg-[#18181f] rounded-xl border border-white/[0.07]">
+                  <div>
+                    <h3 className="text-[13px] font-semibold mb-0.5">Sessão</h3>
+                    <p className="text-[11px] text-gray-500 font-mono">Modo offline — sem conta vinculada</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

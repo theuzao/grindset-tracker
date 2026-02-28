@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { Shield, Swords, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSupabaseClient } from '@/services/supabaseClient';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+
 
 function translateAuthError(msg: string): string {
   if (msg.includes('Invalid login credentials')) return 'E-mail ou senha incorretos.';
@@ -19,8 +20,11 @@ function translateAuthError(msg: string): string {
 type Mode = 'login' | 'register';
 
 export function Login() {
-  const { signIn, signUp } = useAuth();
+  const { user, loading: authLoading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+
+  if (authLoading) return null;
+  if (user) return <Navigate to="/" replace />;
 
   const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState('');
